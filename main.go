@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+
 	"./gol"
 )
 
@@ -16,4 +18,5 @@ func main() {
 	//gol.PrintAnime(testy)
 
 	action(cmdArgs[1:])
+	fmt.Println("Done!")
 }

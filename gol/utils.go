@@ -3,6 +3,7 @@ package gol
 import (
 	"fmt"
 	"io/ioutil"
+	"os"
 	"strings"
 )
 
@@ -56,4 +57,30 @@ func readFile(filename string) []string {
 	}
 
 	return validLines
+}
+
+//Makes sure the file is only left with comments
+func rewriteFile(filename string) {
+	//Read all data
+	data, err := ioutil.ReadFile(filename)
+	check(err)
+	plaintext := string(data)
+	lines := strings.Split(plaintext, "\r\n")
+
+	// Filter out comments
+	commentedLines := make([]string, 0)
+	for _, line := range lines {
+		if strings.Contains(line, "#") {
+			commentedLines = append(commentedLines, strings.TrimSpace(line))
+		}
+	}
+
+	//Now, writeback
+	_ = os.Remove(filename)
+	newFile, _ := os.Create(filename)
+	defer newFile.Close()
+	for _, line := range commentedLines {
+		newFile.WriteString(line)
+		newFile.WriteString("\n")
+	}
 }

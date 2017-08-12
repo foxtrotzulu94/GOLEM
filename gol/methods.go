@@ -5,7 +5,6 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/jinzhu/gorm"
 	_ "github.com/mattn/go-sqlite3"
 )
 
@@ -17,8 +16,8 @@ func Null([]string) int {
 	return 1
 }
 
-func gatherInfo(mainChannel chan ListElement, url string) {
-	listElement := SourceMyAnimeList(url)
+func gatherInfo(mainChannel chan ListElement, url string, source InfoSource) {
+	listElement := source(url)
 	mainChannel <- listElement
 }
 
@@ -32,10 +31,18 @@ func scan(args []string) int {
 
 	fileName := getListFilename(listName)
 	fileContents := readFile(fileName)
+	if len(fileContents) < 1 {
+		fmt.Println("No new records were detected")
+		return 0
+	}
+
 	mainChannel := make(chan ListElement)
 	activeRoutines := 0
 	animeList := make([]ListElement, 0)
 	animeSet := make(map[string]bool)
+
+	//TODO: CHANGE DYNAMICALLY
+	infoSource := SourceMyAnimeList
 
 	//Spawn all the go routines
 	for _, url := range fileContents {
@@ -51,7 +58,7 @@ func scan(args []string) int {
 		}
 
 		//Send off the request concurrently
-		go gatherInfo(mainChannel, url)
+		go gatherInfo(mainChannel, url, infoSource)
 
 		//go gatherInfo(mainChannel, url)
 		animeSet[url] = true
@@ -65,25 +72,28 @@ func scan(args []string) int {
 			animeList = append(animeList, animePtr)
 		}
 	}
+	if len(animeList) < 1 {
+		fmt.Println("No new records were detected after filtering")
+		return 0
+	}
 
 	//Now sort that list
 	safeAnimeList := OrderedList(animeList)
 	sort.Sort(sort.Reverse(safeAnimeList))
 
 	fmt.Println("")
-	db, err := gorm.Open("sqlite3", "testy.db")
-	check(err)
+	db := getDatabase()
 	defer db.Close()
-	db.CreateTable(&ListElementFields{}, &AnimeListElement{})
 
-	var animeEpisodeCount = 0
-	for i, anime := range safeAnimeList {
-		fmt.Printf("%d. ", i+1)
+	fmt.Printf("Storing %d new records in Database\n", activeRoutines)
+	for _, anime := range safeAnimeList {
+		//TODO: ABSTRACT AWAY into database.go or something
 		animePtr := anime.(AnimeListElement)
 		db.Create(&animePtr)
-		//PrintAnime(animePtr)
-		animeEpisodeCount += anime.(AnimeListElement).NumEpisodes
 	}
+
+	fmt.Println("Cleaning up text file...")
+	rewriteFile(fileName)
 
 	return 0
 }

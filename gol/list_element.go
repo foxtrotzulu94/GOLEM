@@ -27,8 +27,8 @@ func (slice OrderedList) Swap(i, j int) {
 type ListElementFields struct {
 	ID int
 
-	URL         string `xorm:"unique"`
-	Name        string
+	URL         string `sql:"unique"`
+	Name        string `sql:"unique"`
 	Description string
 	IsRated     bool
 
@@ -40,7 +40,7 @@ type ListElementFields struct {
 }
 
 type AnimeListElement struct {
-	ID   int               `xorm:"unique"`
+	ID   int
 	Base ListElementFields `gorm:"polymorphic:Owner;"`
 
 	NumEpisodes int
@@ -48,17 +48,19 @@ type AnimeListElement struct {
 }
 
 type GameListElement struct {
-	base ListElementFields
+	ID   int
+	Base ListElementFields `gorm:"polymorphic:Owner;"`
 
-	platform string
-	release  time.Time
-	gameType string
+	Platform string
+	Release  time.Time
+	GameType string
 }
 
 type BookListElement struct {
-	base ListElementFields
+	ID   int
+	Base ListElementFields `gorm:"polymorphic:Owner;"`
 
-	platform string
+	Category string
 }
 
 //FIXME: Can't seem to pass by reference in here without breaking everything
