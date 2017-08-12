@@ -25,7 +25,7 @@ func (slice OrderedList) Swap(i, j int) {
 }
 
 type ListElementFields struct {
-	ID int64
+	ID int
 
 	URL         string `xorm:"unique"`
 	Name        string
@@ -34,11 +34,14 @@ type ListElementFields struct {
 
 	SourceRating    float32
 	HeuristicRating float32
+
+	OwnerId   int
+	OwnerType string
 }
 
 type AnimeListElement struct {
-	//Id   int64
-	Base ListElementFields
+	ID   int               `xorm:"unique"`
+	Base ListElementFields `gorm:"polymorphic:Owner;"`
 
 	NumEpisodes int
 	AirTime     time.Time

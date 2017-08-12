@@ -5,14 +5,12 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/go-xorm/xorm"
+	"github.com/jinzhu/gorm"
 	_ "github.com/mattn/go-sqlite3"
 )
 
 //ManagerMethod Defines a type signature for all the manager methods
 type ManagerMethod func([]string) int
-
-var DB *xorm.Engine = nil
 
 //Null function
 func Null([]string) int {
@@ -73,13 +71,17 @@ func scan(args []string) int {
 	sort.Sort(sort.Reverse(safeAnimeList))
 
 	fmt.Println("")
+	db, err := gorm.Open("sqlite3", "testy.db")
+	check(err)
+	defer db.Close()
+	db.CreateTable(&ListElementFields{}, &AnimeListElement{})
 
 	var animeEpisodeCount = 0
 	for i, anime := range safeAnimeList {
 		fmt.Printf("%d. ", i+1)
 		animePtr := anime.(AnimeListElement)
-		DB.Insert(animePtr)
-		PrintAnime(animePtr)
+		db.Create(&animePtr)
+		//PrintAnime(animePtr)
 		animeEpisodeCount += anime.(AnimeListElement).NumEpisodes
 	}
 
