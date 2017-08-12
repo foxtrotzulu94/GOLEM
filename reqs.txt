@@ -1,0 +1,19 @@
+Ordered list project
+
+Types:
+	InfoSource: for scraping webpages and filling in Data
+	ListElement: a particular entry in a list that can be rated, described, sorted, etc.
+		AnimeListElement
+		MangaListElement
+		...
+
+Operations:
+	"scan [List name]": Add entries from list name to the database
+	"next [List name]": Check what the next item in the list is
+	"pop": Mark the next item as viewed and take it off the active queue
+	"push [List Name] [link]": insert item into list with link. Remember, it's not a stack
+	"list [List name]": show the ordered list items
+	"detail [list name] [num]": Show more info from a given item.
+	"remove [list name] [num]": Take an item off the list
+	"review [list name] [pending|viewed|removed]": Check how the ordered list is going
+	"status"
