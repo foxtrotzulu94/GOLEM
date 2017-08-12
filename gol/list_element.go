@@ -1,6 +1,7 @@
 package gol
 
 import (
+	"fmt"
 	"math"
 	"time"
 )
@@ -8,6 +9,7 @@ import (
 type ListElement interface {
 	rateElement() float32
 	getListName() string
+	printInfo()
 }
 
 type OrderedList []ListElement
@@ -76,6 +78,10 @@ func (item AnimeListElement) rateElement() float32 {
 
 func (item AnimeListElement) getListName() string {
 	return "anime"
+}
+
+func (item AnimeListElement) printInfo() {
+	fmt.Printf("\"%s\" [%.2f] - %d Episode(s) - %s\n", item.Base.Name, item.Base.HeuristicRating, item.NumEpisodes, item.Base.URL)
 }
 
 // TODO: Implement the interface methods for each struct

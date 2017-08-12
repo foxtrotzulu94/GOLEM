@@ -56,7 +56,6 @@ func scan(args []string) int {
 		}
 
 		//Send off the request concurrently
-		//TODO: CHANGE DYNAMICALLY
 		infoSource := determineAppropriateSource(url)
 		go gatherInfo(mainChannel, url, infoSource)
 
@@ -90,7 +89,16 @@ func scan(args []string) int {
 }
 
 func next(args []string) int {
-	return 1
+	//Load the required elements and then just pick the first one
+	listName := strings.ToLower(args[0])
+	if !isValidListName(listName) {
+		fmt.Println(listName)
+		panic("Given List Name was invalid")
+	}
+
+	orderedList := LoadListElements(listName)
+	orderedList[0].printInfo()
+	return 0
 }
 
 func pop(args []string) int {
