@@ -20,17 +20,17 @@ func isValidListName(listName string) bool {
 }
 
 func PrintAnime(object AnimeListElement) {
-	fmt.Printf("\"%s\" [%.2f] (%s)\n", object.base.name, object.base.heuristicRating, object.base.url)
-	fmt.Printf("Episodes: %d | Rating: %.2f \n", object.numEpisodes, object.base.sourceRating)
+	fmt.Printf("\"%s\" [%.2f] (%s)\n", object.Base.Name, object.Base.HeuristicRating, object.Base.URL)
+	fmt.Printf("Episodes: %d | Rating: %.2f \n", object.NumEpisodes, object.Base.SourceRating)
 
 	maxChars := 80
-	length := len(object.base.description)
+	length := len(object.Base.Description)
 	for i := 0; i < length; i += maxChars {
 		var extent int = i + maxChars
 		if extent > length { //Slicing beyond length causes an exception. Careful with this
 			extent = length
 		}
-		fmt.Printf("\t%s\n", object.base.description[i:extent])
+		fmt.Printf("\t%s\n", object.Base.Description[i:extent])
 	}
 	fmt.Println("")
 }

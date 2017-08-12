@@ -25,20 +25,23 @@ func (slice OrderedList) Swap(i, j int) {
 }
 
 type ListElementFields struct {
-	url         string
-	name        string
-	description string
-	isRated     bool
+	ID int64
 
-	sourceRating    float32
-	heuristicRating float32
+	URL         string `xorm:"unique"`
+	Name        string
+	Description string
+	IsRated     bool
+
+	SourceRating    float32
+	HeuristicRating float32
 }
 
 type AnimeListElement struct {
-	base ListElementFields
+	//Id   int64
+	Base ListElementFields
 
-	numEpisodes int
-	airTime     time.Time
+	NumEpisodes int
+	AirTime     time.Time
 }
 
 type GameListElement struct {
@@ -57,13 +60,13 @@ type BookListElement struct {
 
 //FIXME: Can't seem to pass by reference in here without breaking everything
 func (item AnimeListElement) rateElement() float32 {
-	if item.base.isRated {
-		return item.base.heuristicRating
+	if item.Base.IsRated {
+		return item.Base.HeuristicRating
 	}
 
 	lengthFactor := float32(1.5)
 	// dateFactor := float32(1.0)
-	return (item.base.sourceRating * 10.0) - (float32(item.numEpisodes) * lengthFactor)
+	return (item.Base.SourceRating * 10.0) - (float32(item.NumEpisodes) * lengthFactor)
 }
 
 func (item AnimeListElement) getListName() string {
@@ -74,12 +77,12 @@ func (item AnimeListElement) getListName() string {
 
 func CreateListElementFields(url, name, description string, sourceRating float32) ListElementFields {
 	var common ListElementFields
-	common.url = url
-	common.name = name
-	common.sourceRating = sourceRating
-	common.heuristicRating = float32(math.NaN())
-	common.description = description
-	common.isRated = false
+	common.URL = url
+	common.Name = name
+	common.SourceRating = sourceRating
+	common.HeuristicRating = float32(math.NaN())
+	common.Description = description
+	common.IsRated = false
 
 	return common
 }

@@ -82,10 +82,10 @@ func SourceMyAnimeList(URL string) ListElement {
 
 	//Create the object and populate fields
 	var retVal AnimeListElement
-	retVal.numEpisodes = numEpisodes
-	retVal.base = CreateListElementFields(URL, name, description, sourceRating)
-	retVal.base.heuristicRating = retVal.rateElement()
-	retVal.base.isRated = true
+	retVal.NumEpisodes = numEpisodes
+	retVal.Base = CreateListElementFields(URL, name, description, sourceRating)
+	retVal.Base.HeuristicRating = retVal.rateElement()
+	retVal.Base.IsRated = true
 	return retVal
 }
 
