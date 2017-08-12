@@ -1,0 +1,103 @@
+package gol
+
+import (
+	"fmt"
+	"net/http"
+	"strconv"
+	"strings"
+
+	"github.com/yhat/scrape"
+	"golang.org/x/net/html"
+	"golang.org/x/net/html/atom"
+)
+
+//InfoSource Defines the type signature of an information source that can be used to create and rate new ListElements
+type InfoSource func(string) *ListElement
+
+func check(e error) {
+	if e != nil {
+		panic(e)
+	}
+}
+
+func SourceNull(URL string) *ListElement {
+	return nil
+}
+
+var testyfunct InfoSource = SourceNull
+
+func SourceMyAnimeList(URL string) ListElement {
+	// Request the page
+	resp, err := http.Get(URL)
+	check(err)
+	root, err := html.Parse(resp.Body)
+	check(err)
+
+	// Define the matcher so it collects all the tags of interest in one pass, we'll sort them out later
+	generalMatcher := func(n *html.Node) bool {
+		if n == nil {
+			return false
+		}
+
+		isName := scrape.Attr(n, "itemprop") == "name" && n.Parent != nil && n.Parent.DataAtom == atom.H1
+		isDescription := scrape.Attr(n, "itemprop") == "description"
+		isNumEpisodes := (scrape.Attr(n, "class") == "spaceit" && strings.Contains(scrape.Text(n), "Episodes:"))
+		isScore := scrape.Attr(n, "data-title") == "score"
+
+		return (isName || isDescription || isNumEpisodes || isScore)
+	}
+
+	//Find and iterate
+	matches := scrape.FindAll(root, generalMatcher)
+
+	var name, description string
+	var numEpisodes int
+	var sourceRating float32
+	for _, tagMatch := range matches {
+		//Place it accordingly
+		stringMatch := scrape.Text(tagMatch)
+		if strings.Contains(stringMatch, "Episodes: ") {
+			numEpisodes, _ = strconv.Atoi(stringMatch[len("Episodes: "):])
+		} else {
+			if scrape.Attr(tagMatch, "data-title") == "score" {
+				floatVal, e := strconv.ParseFloat(stringMatch, 32)
+				if e != nil {
+					fmt.Println(URL)
+					panic(e)
+				}
+				sourceRating = float32(floatVal)
+				if floatVal < 7.00 {
+					//Fuck it, I'm not watching bad anime.
+					fmt.Println("Discarded " + URL)
+					return nil
+				}
+			} else {
+				itempropVal := scrape.Attr(tagMatch, "itemprop")
+				if itempropVal == "name" {
+					name = stringMatch
+				} else if itempropVal == "description" {
+					description = stringMatch
+				}
+			}
+		}
+	}
+
+	var retVal AnimeListElement
+	retVal.numEpisodes = numEpisodes
+	retVal.base = CreateListElementFields(URL, name, description, sourceRating)
+	retVal.rateElement()
+
+	return retVal
+}
+
+func SourceSteamOnline(URL string) ListElement {
+	return nil
+}
+
+func SourceMetacritic(URL string) ListElement {
+	return nil
+}
+
+func SourceAmazonWeb(URL string) ListElement {
+	return nil
+}
