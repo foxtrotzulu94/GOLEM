@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	cmdArgs := []string{"next", "anime"}
+	cmdArgs := []string{"list", "anime"}
 	fmt.Println(cmdArgs)
 	action := gol.Methods[cmdArgs[0]]
 

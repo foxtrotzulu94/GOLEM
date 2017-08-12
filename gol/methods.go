@@ -96,12 +96,14 @@ func next(args []string) int {
 		panic("Given List Name was invalid")
 	}
 
-	orderedList := LoadListElements(listName)
+	orderedList := LoadListElements(listName, true, true)
 	orderedList[0].printInfo()
 	return 0
 }
 
 func pop(args []string) int {
+	//Same as "next" but confirm deletion
+
 	return 1
 }
 
@@ -110,7 +112,18 @@ func push(args []string) int {
 }
 
 func list(args []string) int {
-	return 1
+	//Load all active items
+	listName := strings.ToLower(args[0])
+	if !isValidListName(listName) {
+		fmt.Println(listName)
+		panic("Given List Name was invalid")
+	}
+
+	orderedList := LoadListElements(listName, true, true)
+	for _, entry := range orderedList {
+		entry.printInfo()
+	}
+	return 0
 }
 
 func detail(args []string) int {

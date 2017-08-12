@@ -33,6 +33,8 @@ type ListElementFields struct {
 	Name        string `sql:"unique"`
 	Description string
 	IsRated     bool
+	WasViewed   bool
+	WasRemoved  bool
 
 	SourceRating    float32
 	HeuristicRating float32
@@ -81,7 +83,7 @@ func (item AnimeListElement) getListName() string {
 }
 
 func (item AnimeListElement) printInfo() {
-	fmt.Printf("\"%s\" [%.2f] - %d Episode(s) - %s\n", item.Base.Name, item.Base.HeuristicRating, item.NumEpisodes, item.Base.URL)
+	fmt.Printf("(%04d) \"%s\" [%.2f] - %d Episode(s) - %s\n", item.ID, item.Base.Name, item.Base.HeuristicRating, item.NumEpisodes, item.Base.URL)
 }
 
 // TODO: Implement the interface methods for each struct
@@ -94,6 +96,8 @@ func CreateListElementFields(url, name, description string, sourceRating float32
 	common.HeuristicRating = float32(math.NaN())
 	common.Description = description
 	common.IsRated = false
+	common.WasRemoved = false
+	common.WasViewed = false
 
 	return common
 }

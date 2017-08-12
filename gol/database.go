@@ -47,12 +47,13 @@ func saveListElements(elementType string, sortedElements OrderedList) {
 	db.Close()
 }
 
-func LoadListElements(elementType string) OrderedList {
+func LoadListElements(elementType string, filterRemoved, filterViewed bool) OrderedList {
 	db := getDatabase()
 	defer db.Close()
 
 	var RetVal OrderedList
 	var InterfaceList []ListElement
+	validEntries := 0
 
 	switch elementType {
 	case "anime":
@@ -60,12 +61,16 @@ func LoadListElements(elementType string) OrderedList {
 		db.Find(&MainList)
 		InterfaceList = make([]ListElement, len(MainList))
 
-		for i, item := range MainList {
+		for _, item := range MainList {
 			var BaseElement ListElementFields
 			db.Where("owner_id = ?", item.ID).First(&BaseElement)
 
 			item.Base = BaseElement
-			InterfaceList[i] = item
+			skipItem := (BaseElement.WasRemoved && filterRemoved) || (BaseElement.WasViewed && filterViewed)
+			if !skipItem {
+				InterfaceList[validEntries] = item
+				validEntries++
+			}
 		}
 
 	case "books":
@@ -74,7 +79,7 @@ func LoadListElements(elementType string) OrderedList {
 		panic("Not Implemented Yet")
 	}
 
-	RetVal = OrderedList(InterfaceList)
+	RetVal = OrderedList(InterfaceList[0:validEntries])
 	sort.Sort(sort.Reverse(RetVal))
 
 	return RetVal
