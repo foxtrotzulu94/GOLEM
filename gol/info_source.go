@@ -97,6 +97,37 @@ func SourceMetacritic(URL string) ListElement {
 	return nil
 }
 
-func SourceAmazonWeb(URL string) ListElement {
+func SourceAmazonUS(URL string) ListElement {
+	return nil
+}
+
+func SourceAmazonCanada(URL string) ListElement {
+	return nil
+}
+
+var Sources = map[string]InfoSource{
+	"myanimelist.net":        SourceMyAnimeList,
+	"store.steampowered.com": SourceSteamOnline,
+	"www.amazon.ca":          SourceAmazonCanada,
+	"amazon.com":             SourceAmazonUS,
+	"www.metacritic.com":     SourceMetacritic,
+}
+
+func determineAppropriateSource(URL string) InfoSource {
+	domainName := ExtractDomainName(URL)
+
+	//1st try is straight up matching
+	if val, ok := Sources[domainName]; ok {
+		return val
+	}
+
+	//2nd try is substring matching
+	for key := range Sources {
+		if strings.Contains(URL, key) {
+			return Sources[key]
+		}
+	}
+
+	//no 3rd try, just return nil
 	return nil
 }

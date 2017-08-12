@@ -42,9 +42,6 @@ func scan(args []string) int {
 	entries := make([]ListElement, 0)
 	entrySet := make(map[string]bool)
 
-	//TODO: CHANGE DYNAMICALLY
-	infoSource := SourceMyAnimeList
-
 	//Spawn all the go routines
 	for _, url := range fileContents {
 		//Avoid requesting something that's NOT a URL
@@ -59,6 +56,8 @@ func scan(args []string) int {
 		}
 
 		//Send off the request concurrently
+		//TODO: CHANGE DYNAMICALLY
+		infoSource := determineAppropriateSource(url)
 		go gatherInfo(mainChannel, url, infoSource)
 
 		entrySet[url] = true
