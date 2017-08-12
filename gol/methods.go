@@ -23,6 +23,7 @@ func gatherInfo(mainChannel chan ListElement, url string, source InfoSource) {
 
 func scan(args []string) int {
 	// Read just one argument: the name of the list
+	// This is used throughout in the most generic manner in this function
 	listName := strings.ToLower(args[0])
 	if !isValidListName(listName) {
 		fmt.Println(listName)
@@ -38,8 +39,8 @@ func scan(args []string) int {
 
 	mainChannel := make(chan ListElement)
 	activeRoutines := 0
-	animeList := make([]ListElement, 0)
-	animeSet := make(map[string]bool)
+	entries := make([]ListElement, 0)
+	entrySet := make(map[string]bool)
 
 	//TODO: CHANGE DYNAMICALLY
 	infoSource := SourceMyAnimeList
@@ -52,7 +53,7 @@ func scan(args []string) int {
 		}
 
 		// Avoid requesting a previously seen URL
-		if _, ok := animeSet[url]; ok {
+		if _, ok := entrySet[url]; ok {
 			fmt.Println("Duplicate " + url)
 			continue
 		}
@@ -60,40 +61,31 @@ func scan(args []string) int {
 		//Send off the request concurrently
 		go gatherInfo(mainChannel, url, infoSource)
 
-		//go gatherInfo(mainChannel, url)
-		animeSet[url] = true
+		entrySet[url] = true
 		activeRoutines++
 	}
 	//Wait for them to come back in order
 	for i := 0; i < activeRoutines; i++ {
-		animePtr := <-mainChannel
-		// animeObj := *animePtr
-		if animePtr != nil {
-			animeList = append(animeList, animePtr)
+		listElement := <-mainChannel
+		if listElement != nil {
+			entries = append(entries, listElement)
 		}
 	}
-	if len(animeList) < 1 {
+	if len(entries) < 1 {
 		fmt.Println("No new records were detected after filtering")
 		return 0
 	}
 
 	//Now sort that list
-	safeAnimeList := OrderedList(animeList)
-	sort.Sort(sort.Reverse(safeAnimeList))
+	sortedElements := OrderedList(entries)
+	sort.Sort(sort.Reverse(sortedElements))
 
 	fmt.Println("")
-	db := getDatabase()
-	defer db.Close()
-
 	fmt.Printf("Storing %d new records in Database\n", activeRoutines)
-	for _, anime := range safeAnimeList {
-		//TODO: ABSTRACT AWAY into database.go or something
-		animePtr := anime.(AnimeListElement)
-		db.Create(&animePtr)
-	}
+	saveListElements(listName, sortedElements)
 
 	fmt.Println("Cleaning up text file...")
-	rewriteFile(fileName)
+	//rewriteFile(fileName)
 
 	return 0
 }
