@@ -1,22 +1,19 @@
 package main
 
 import (
-	"fmt"
-	"os"
-	"reflect"
-
 	"./gol"
 )
 
 func main() {
-	cmdArgs := os.Args[1:]
-	fmt.Println(cmdArgs)
-	gol.Null([]string{})
+	//cmdArgs := os.Args[1:]
+	cmdArgs := []string{"scan", "anime"}
+	//fmt.Println(cmdArgs)
+	action := gol.Methods[cmdArgs[0]]
 
-	//Currently doesn't work
-	//functy := gol.SourceMyAnimeList
-	fmt.Println(reflect.TypeOf(gol.SourceNull))
+	//gol.Null([]string{})
 
-	var testy gol.AnimeListElement = gol.SourceMyAnimeList("https://myanimelist.net/anime/71/Full_Metal_Panic").(gol.AnimeListElement)
-	gol.PrintAnime(testy)
+	//var testy gol.AnimeListElement = gol.SourceMyAnimeList("https://myanimelist.net/anime/71/Full_Metal_Panic").(gol.AnimeListElement)
+	//gol.PrintAnime(testy)
+
+	action(cmdArgs[1:])
 }

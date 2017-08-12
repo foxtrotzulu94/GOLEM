@@ -1,7 +1,6 @@
 package gol
 
 import (
-	"fmt"
 	"math"
 	"time"
 )
@@ -9,6 +8,20 @@ import (
 type ListElement interface {
 	rateElement() float32
 	getListName() string
+}
+
+type OrderedList []ListElement
+
+func (slice OrderedList) Len() int {
+	return len(slice)
+}
+
+func (slice OrderedList) Less(i, j int) bool {
+	return slice[i].rateElement() < slice[j].rateElement()
+}
+
+func (slice OrderedList) Swap(i, j int) {
+	slice[i], slice[j] = slice[j], slice[i]
 }
 
 type ListElementFields struct {
@@ -42,19 +55,15 @@ type BookListElement struct {
 	platform string
 }
 
-//TODO: Can't seem to pass by reference in here :/
+//FIXME: Can't seem to pass by reference in here without breaking everything
 func (item AnimeListElement) rateElement() float32 {
-	fmt.Println("Rating!")
 	if item.base.isRated {
 		return item.base.heuristicRating
 	}
 
 	lengthFactor := float32(1.5)
 	// dateFactor := float32(1.0)
-	item.base.heuristicRating = (item.base.sourceRating * 10.0) - (float32(item.numEpisodes) * lengthFactor)
-	item.base.isRated = true
-
-	return item.base.heuristicRating
+	return (item.base.sourceRating * 10.0) - (float32(item.numEpisodes) * lengthFactor)
 }
 
 func (item AnimeListElement) getListName() string {

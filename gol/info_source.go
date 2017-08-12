@@ -12,7 +12,7 @@ import (
 )
 
 //InfoSource Defines the type signature of an information source that can be used to create and rate new ListElements
-type InfoSource func(string) *ListElement
+type InfoSource func(string) ListElement
 
 func check(e error) {
 	if e != nil {
@@ -20,11 +20,9 @@ func check(e error) {
 	}
 }
 
-func SourceNull(URL string) *ListElement {
+func SourceNull(URL string) ListElement {
 	return nil
 }
-
-var testyfunct InfoSource = SourceNull
 
 func SourceMyAnimeList(URL string) ListElement {
 	// Request the page
@@ -82,11 +80,12 @@ func SourceMyAnimeList(URL string) ListElement {
 		}
 	}
 
+	//Create the object and populate fields
 	var retVal AnimeListElement
 	retVal.numEpisodes = numEpisodes
 	retVal.base = CreateListElementFields(URL, name, description, sourceRating)
-	retVal.rateElement()
-
+	retVal.base.heuristicRating = retVal.rateElement()
+	retVal.base.isRated = true
 	return retVal
 }
 
