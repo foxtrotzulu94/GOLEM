@@ -90,18 +90,26 @@ func SourceMyAnimeList(URL string) ListElement {
 }
 
 func SourceSteamOnline(URL string) ListElement {
+	//TODO:
+	panic("Not Implemented Yet")
 	return nil
 }
 
 func SourceMetacritic(URL string) ListElement {
+	//TODO:
+	panic("Not Implemented Yet")
 	return nil
 }
 
 func SourceAmazonUS(URL string) ListElement {
+	//TODO:
+	panic("Not Implemented Yet")
 	return nil
 }
 
 func SourceAmazonCanada(URL string) ListElement {
+	//TODO:
+	panic("Not Implemented Yet")
 	return nil
 }
 

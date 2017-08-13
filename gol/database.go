@@ -6,13 +6,14 @@ import (
 	"sort"
 
 	"github.com/jinzhu/gorm"
+	//Needed for the gorm package on top
 	_ "github.com/mattn/go-sqlite3"
 )
 
-var DatabaseName = "GOL.sqlite3"
+var databaseName = "GOL.sqlite3"
 
 func getDatabase() *gorm.DB {
-	db, err := gorm.Open("sqlite3", DatabaseName)
+	db, err := gorm.Open("sqlite3", databaseName)
 	check(err)
 
 	//Handle initialization/creation/migration automatically if possible
@@ -36,6 +37,8 @@ func saveGameEntries(db *gorm.DB, sortedElements OrderedList) {
 	panic("Not Implemented Yet")
 }
 
+//TODO: Refactor the code below to reduce the use of switch cases.
+
 func saveListElements(elementType string, sortedElements OrderedList) {
 	db := getDatabase()
 	switch elementType {
@@ -49,7 +52,11 @@ func saveListElements(elementType string, sortedElements OrderedList) {
 	db.Close()
 }
 
-func LoadListElements(elementType string, filterRemoved, filterViewed bool) OrderedList {
+func loadListElements(elementType string, filterActive, filterRemoved, filterViewed bool) OrderedList {
+	if filterActive && filterViewed && filterRemoved {
+		panic("Programmer error: Result of loadListElements will be empty!")
+	}
+
 	db := getDatabase()
 	defer db.Close()
 
@@ -69,7 +76,12 @@ func LoadListElements(elementType string, filterRemoved, filterViewed bool) Orde
 			db.Where("owner_id = ? AND owner_type = ?", item.ID, tableName).First(&BaseElement)
 
 			item.Base = BaseElement
-			skipItem := (BaseElement.WasRemoved && filterRemoved) || (BaseElement.WasViewed && filterViewed)
+			isActive := !(BaseElement.WasRemoved || BaseElement.WasViewed)
+
+			// skipActive := isActive && filterActive
+			skipItem := (BaseElement.WasRemoved && filterRemoved) || (BaseElement.WasViewed && filterViewed) || (isActive && filterActive)
+
+			// validItem := !(skipHidden && skipActive)
 			if !skipItem {
 				InterfaceList[validEntries] = item
 				validEntries++

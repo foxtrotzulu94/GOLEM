@@ -8,10 +8,10 @@ import (
 )
 
 func main() {
-	//cmdArgs := []string{"finished", "anime", ""}
+	//cmdArgs := []string{"list", "anime", ""}
 	cmdArgs := os.Args[1:]
 	fmt.Println(cmdArgs)
-	action := gol.Methods[cmdArgs[0]]
+	action := gol.Actions[cmdArgs[0]]
 
 	action(cmdArgs[1:])
 	fmt.Println("")

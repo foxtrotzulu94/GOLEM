@@ -7,12 +7,10 @@ import (
 	"sort"
 	"strconv"
 	"strings"
-
-	_ "github.com/mattn/go-sqlite3"
 )
 
-//ManagerMethod Defines a type signature for all the manager methods
-type ManagerMethod func([]string) int
+//ManagerAction Defines a type signature for all the manager methods
+type ManagerAction func([]string) int
 
 //Null function
 func Null([]string) int {
@@ -99,7 +97,7 @@ func next(args []string) int {
 		panic("Given List Name was invalid")
 	}
 
-	orderedList := LoadListElements(listName, true, true)
+	orderedList := loadListElements(listName, false, true, true)
 	orderedList[0].printInfo()
 	return 0
 }
@@ -113,7 +111,7 @@ func pop(args []string) int {
 		panic("Given List Name was invalid")
 	}
 
-	orderedList := LoadListElements(listName, true, true)
+	orderedList := loadListElements(listName, false, true, true)
 	orderedList[0].printInfo()
 
 	fmt.Print("\nAre you sure you want to proceed? (Y/n): ")
@@ -143,18 +141,20 @@ func list(args []string) int {
 		panic("Given List Name was invalid")
 	}
 
-	orderedList := LoadListElements(listName, true, true)
+	orderedList := loadListElements(listName, false, true, true)
 	for _, entry := range orderedList {
 		entry.printInfo()
 	}
 	return 0
 }
 
+// TODO: finish implementing
 func detail(args []string) int {
 	return 1
 }
 
-func finished(args []string) int {
+//This is used mostly by the "finished" and "remove" actions
+func changeListElementField(args []string, fieldName string, newValue interface{}) {
 	//First arg is listName, second is ID
 	listName := strings.ToLower(args[0])
 	if !isValidListName(listName) {
@@ -164,13 +164,14 @@ func finished(args []string) int {
 	listID, _ := strconv.Atoi(args[1])
 	entry := getElementByID(listName, listID)
 	entry.printInfo()
+
 	if entry.wasFinished() {
 		fmt.Println("This entry was previously marked as viewed")
-		return 0
+		return
 	}
 	if entry.wasRemoved() {
 		fmt.Println("This entry was removed from the lists entirely")
-		return 0
+		return
 	}
 
 	fmt.Print("\nAre you sure you want to proceed? (Y/n): ")
@@ -184,19 +185,47 @@ func finished(args []string) int {
 	} else {
 		os.Exit(0)
 	}
+}
 
+func finished(args []string) int {
+	changeListElementField(args, "WasViewed", true)
 	return 0
 }
 
 func remove(args []string) int {
-	return 1
+	changeListElementField(args, "WasRemoved", true)
+	return 0
 }
 
+// TODO: Finish implementing
 func review(args []string) int {
+	listName := args[0]
+	filters := strings.ToLower(strings.Join(args[1:], " "))
+	if len(filters) < 1 {
+		//just list args
+		return list(args)
+	}
+
+	reviewFinished := strings.Contains(filters, "viewed") || strings.Contains(filters, "finished")
+	reviewRemoved := strings.Contains(filters, "removed")
+	if !reviewFinished && !reviewRemoved {
+		fmt.Println("A valid option was not selected")
+	}
+
+	if reviewFinished {
+		namedList := loadListElements(listName, true, true, false)
+		fmt.Printf("Finished entries in %s: %d\n", listName, len(namedList))
+		for _, item := range namedList {
+			fmt.Print("\t")
+			item.printInfo()
+		}
+	}
+
 	return 1
 }
 
-var Methods = map[string]ManagerMethod{
+//Actions The functions that this program can do.
+var Actions = map[string]ManagerAction{
 	"scan":     scan,
 	"next":     next,
 	"push":     push,
