@@ -12,6 +12,7 @@ type ListElement interface {
 	wasFinished() bool
 	wasRemoved() bool
 	printInfo()
+	//TODO: Add "printDetailedInfo" and "getListElementFields"
 }
 
 type OrderedList []ListElement
@@ -85,7 +86,7 @@ func (item AnimeListElement) getListName() string {
 }
 
 func (item AnimeListElement) printInfo() {
-	fmt.Printf("(%04d) \"%s\" [%.2f] - %d Episode(s) - %s\n", item.ID, item.Base.Name, item.Base.HeuristicRating, item.NumEpisodes, item.Base.URL)
+	fmt.Printf("[%04d] (%.2f) \"%s\" - %d Episode(s) - %s\n", item.ID, item.Base.HeuristicRating, item.Base.Name, item.NumEpisodes, item.Base.URL)
 }
 
 func (item AnimeListElement) wasFinished() bool {
