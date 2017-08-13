@@ -9,6 +9,8 @@ import (
 type ListElement interface {
 	rateElement() float32
 	getListName() string
+	wasFinished() bool
+	wasRemoved() bool
 	printInfo()
 }
 
@@ -84,6 +86,14 @@ func (item AnimeListElement) getListName() string {
 
 func (item AnimeListElement) printInfo() {
 	fmt.Printf("(%04d) \"%s\" [%.2f] - %d Episode(s) - %s\n", item.ID, item.Base.Name, item.Base.HeuristicRating, item.NumEpisodes, item.Base.URL)
+}
+
+func (item AnimeListElement) wasFinished() bool {
+	return item.Base.WasViewed
+}
+
+func (item AnimeListElement) wasRemoved() bool {
+	return item.Base.WasRemoved
 }
 
 // TODO: Implement the interface methods for each struct

@@ -1,8 +1,11 @@
 package gol
 
 import (
+	"bufio"
 	"fmt"
+	"os"
 	"sort"
+	"strconv"
 	"strings"
 
 	_ "github.com/mattn/go-sqlite3"
@@ -83,7 +86,7 @@ func scan(args []string) int {
 	saveListElements(listName, sortedElements)
 
 	fmt.Println("Cleaning up text file...")
-	//rewriteFile(fileName)
+	rewriteFile(fileName)
 
 	return 0
 }
@@ -130,6 +133,40 @@ func detail(args []string) int {
 	return 1
 }
 
+func finished(args []string) int {
+	//First arg is listName, second is ID
+	listName := strings.ToLower(args[0])
+	if !isValidListName(listName) {
+		fmt.Println(listName)
+		panic("Given List Name was invalid")
+	}
+	listID, _ := strconv.Atoi(args[1])
+	entry := getElementByID(listName, listID)
+	entry.printInfo()
+	if entry.wasFinished() {
+		fmt.Println("This entry was previously marked as viewed")
+		return 0
+	}
+	if entry.wasRemoved() {
+		fmt.Println("This entry was removed from the lists entirely")
+		return 0
+	}
+
+	fmt.Print("\nAre you sure you want to proceed? (Y/n): ")
+	reader := bufio.NewReader(os.Stdin)
+	choice, _ := reader.ReadString('\n')
+	choice = strings.ToLower(choice)
+
+	if strings.Contains(choice, "y") {
+		modifyListElementFields(listName, "WasViewed", true, listID)
+		fmt.Println("Marked as finished!")
+	} else {
+		os.Exit(0)
+	}
+
+	return 0
+}
+
 func remove(args []string) int {
 	return 1
 }
@@ -139,12 +176,13 @@ func review(args []string) int {
 }
 
 var Methods = map[string]ManagerMethod{
-	"scan":   scan,
-	"next":   next,
-	"push":   push,
-	"pop":    pop,
-	"list":   list,
-	"detail": detail,
-	"remove": remove,
-	"review": review,
+	"scan":     scan,
+	"next":     next,
+	"push":     push,
+	"pop":      pop,
+	"list":     list,
+	"detail":   detail,
+	"finished": finished,
+	"remove":   remove,
+	"review":   review,
 }

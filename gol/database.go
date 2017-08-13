@@ -1,6 +1,8 @@
 package gol
 
 import (
+	"fmt"
+	"reflect"
 	"sort"
 
 	"github.com/jinzhu/gorm"
@@ -63,7 +65,8 @@ func LoadListElements(elementType string, filterRemoved, filterViewed bool) Orde
 
 		for _, item := range MainList {
 			var BaseElement ListElementFields
-			db.Where("owner_id = ?", item.ID).First(&BaseElement)
+			tableName := gorm.ToDBName(reflect.TypeOf(item).Name()) + "s"
+			db.Where("owner_id = ? AND owner_type = ?", item.ID, tableName).First(&BaseElement)
 
 			item.Base = BaseElement
 			skipItem := (BaseElement.WasRemoved && filterRemoved) || (BaseElement.WasViewed && filterViewed)
@@ -83,4 +86,56 @@ func LoadListElements(elementType string, filterRemoved, filterViewed bool) Orde
 	sort.Sort(sort.Reverse(RetVal))
 
 	return RetVal
+}
+
+func getElementByID(elementType string, elementID int) ListElement {
+	db := getDatabase()
+	defer db.Close()
+
+	switch elementType {
+	case "anime":
+		var entry AnimeListElement
+		db.First(&entry, elementID)
+
+		var BaseElement ListElementFields
+		tableName := gorm.ToDBName(reflect.TypeOf(entry).Name()) + "s" //It would seem the gorm people missed the 's'
+		db.Where("owner_id = ? AND owner_type = ?", elementID, tableName).Find(&BaseElement)
+		entry.Base = BaseElement
+		return entry
+	case "books":
+		panic("Not Implemented Yet")
+	case "games":
+		panic("Not Implemented Yet")
+	}
+
+	return nil
+}
+
+func modifyListElementFields(elementType, fieldName string, newValue interface{}, elementID int) {
+	db := getDatabase()
+	defer db.Close()
+
+	var element ListElementFields
+	var tableName string
+	switch elementType {
+	case "anime":
+		var entry AnimeListElement
+		tableName = gorm.ToDBName(reflect.TypeOf(entry).Name()) + "s"
+	case "books":
+		panic("Not Implemented Yet")
+	case "games":
+		panic("Not Implemented Yet")
+	}
+
+	db.Where("owner_id = ? AND owner_type = ?", elementID, tableName).Find(&element)
+
+	reflectedObject := reflect.ValueOf(&element).Elem()
+	objectField := reflectedObject.FieldByName(fieldName)
+	if objectField.CanSet() {
+		objectField.Set(reflect.ValueOf(newValue))
+	} else {
+		fmt.Println("Object cannot be modified")
+	}
+
+	db.Save(&element)
 }
