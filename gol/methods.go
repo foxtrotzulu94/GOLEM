@@ -106,8 +106,29 @@ func next(args []string) int {
 
 func pop(args []string) int {
 	//Same as "next" but confirm deletion
+	//Load the required elements and then just pick the first one
+	listName := strings.ToLower(args[0])
+	if !isValidListName(listName) {
+		fmt.Println(listName)
+		panic("Given List Name was invalid")
+	}
 
-	return 1
+	orderedList := LoadListElements(listName, true, true)
+	orderedList[0].printInfo()
+
+	fmt.Print("\nAre you sure you want to proceed? (Y/n): ")
+	reader := bufio.NewReader(os.Stdin)
+	choice, _ := reader.ReadString('\n')
+	choice = strings.ToLower(choice)
+
+	if strings.Contains(choice, "y") {
+		modifyListElement(orderedList[0], listName, "WasViewed", true)
+		fmt.Println("Marked as finished!")
+	} else {
+		os.Exit(0)
+	}
+
+	return 0
 }
 
 func push(args []string) int {

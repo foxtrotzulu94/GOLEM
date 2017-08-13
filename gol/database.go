@@ -139,3 +139,18 @@ func modifyListElementFields(elementType, fieldName string, newValue interface{}
 
 	db.Save(&element)
 }
+
+func modifyListElement(entry ListElement, elementType, fieldName string, newValue interface{}) {
+	var elementID int
+	switch elementType {
+	case "anime":
+		elementID = entry.(AnimeListElement).ID
+	case "books":
+		panic("Not Implemented Yet")
+	case "games":
+		panic("Not Implemented Yet")
+	}
+
+	//Send it off to the larger method to avoid code duplication
+	modifyListElementFields(elementType, fieldName, newValue, elementID)
+}
