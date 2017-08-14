@@ -37,8 +37,6 @@ func saveGameEntries(db *gorm.DB, sortedElements OrderedList) {
 	panic("Not Implemented Yet")
 }
 
-//TODO: Refactor the code below to reduce the use of switch cases.
-
 func saveListElements(elementType string, sortedElements OrderedList) {
 	db := getDatabase()
 	switch elementType {
@@ -51,6 +49,8 @@ func saveListElements(elementType string, sortedElements OrderedList) {
 	}
 	db.Close()
 }
+
+//TODO: Refactor the code below to reduce the use of switch cases.
 
 func loadListElements(elementType string, filterActive, filterRemoved, filterViewed bool) OrderedList {
 	if filterActive && filterViewed && filterRemoved {
@@ -77,11 +77,8 @@ func loadListElements(elementType string, filterActive, filterRemoved, filterVie
 
 			item.Base = BaseElement
 			isActive := !(BaseElement.WasRemoved || BaseElement.WasViewed)
-
-			// skipActive := isActive && filterActive
 			skipItem := (BaseElement.WasRemoved && filterRemoved) || (BaseElement.WasViewed && filterViewed) || (isActive && filterActive)
 
-			// validItem := !(skipHidden && skipActive)
 			if !skipItem {
 				InterfaceList[validEntries] = item
 				validEntries++

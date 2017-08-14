@@ -130,6 +130,7 @@ func pop(args []string) int {
 }
 
 func push(args []string) int {
+	// TODO: finish implementing
 	return 1
 }
 
@@ -148,8 +149,8 @@ func list(args []string) int {
 	return 0
 }
 
-// TODO: finish implementing
 func detail(args []string) int {
+	// TODO: finish implementing
 	return 1
 }
 
@@ -197,7 +198,6 @@ func remove(args []string) int {
 	return 0
 }
 
-// TODO: Finish implementing
 func review(args []string) int {
 	listName := args[0]
 	filters := strings.ToLower(strings.Join(args[1:], " "))
@@ -219,9 +219,20 @@ func review(args []string) int {
 			fmt.Print("\t")
 			item.printInfo()
 		}
+		fmt.Println("")
 	}
 
-	return 1
+	if reviewRemoved {
+		namedList := loadListElements(listName, true, false, true)
+		fmt.Printf("Removed entries in %s: %d\n", listName, len(namedList))
+		for _, item := range namedList {
+			fmt.Print("\t")
+			item.printInfo()
+		}
+		fmt.Println("")
+	}
+
+	return 0
 }
 
 //Actions The functions that this program can do.
