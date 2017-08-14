@@ -3,7 +3,6 @@ package gol
 import (
 	"math"
 	"reflect"
-	"time"
 
 	"github.com/jinzhu/gorm"
 )
@@ -40,6 +39,15 @@ func (slice OrderedList) Swap(i, j int) {
 	slice[i], slice[j] = slice[j], slice[i]
 }
 
+func (slice OrderedList) save() {
+	switch subType := slice[0].(type) {
+	case AnimeListElement:
+		subType.saveOrderedList(slice)
+	default:
+		panic("Unknown type!")
+	}
+}
+
 type ListElementFields struct {
 	gorm.Model
 
@@ -55,24 +63,6 @@ type ListElementFields struct {
 
 	OwnerId   int
 	OwnerType string
-}
-
-//TODO: Refactor to split the struct that implement the interface
-
-type GameListElement struct {
-	ID   int
-	Base ListElementFields `gorm:"polymorphic:Owner;"`
-
-	Platform string
-	Release  time.Time
-	GameType string
-}
-
-type BookListElement struct {
-	ID   int
-	Base ListElementFields `gorm:"polymorphic:Owner;"`
-
-	Category string
 }
 
 func CreateListElementFields(url, name, description string, sourceRating float32) ListElementFields {

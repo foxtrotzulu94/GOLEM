@@ -12,11 +12,6 @@ import (
 //ManagerAction Defines a type signature for all the manager methods
 type ManagerAction func([]string) int
 
-//Null function
-func Null([]string) int {
-	return 1
-}
-
 func validateListName(str string) string {
 	listName := strings.ToLower(str)
 	if !isValidListName(listName) {
@@ -96,7 +91,7 @@ func scan(args []string) int {
 
 	fmt.Println("")
 	fmt.Printf("Storing %d new records in Database\n", len(sortedElements))
-	saveListElements(listName, sortedElements)
+	sortedElements.save()
 
 	fmt.Println("Cleaning up text file...")
 	rewriteFile(fileName)
