@@ -171,7 +171,8 @@ func list(args []string) int {
 	listName := validateListName(args[0])
 
 	orderedList := loadListElements(listName, false, true, true)
-	for _, entry := range orderedList {
+	for i, entry := range orderedList {
+		fmt.Printf("%4d.  ", i+1)
 		entry.printInfo()
 	}
 	return 0

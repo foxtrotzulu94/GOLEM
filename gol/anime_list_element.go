@@ -28,7 +28,7 @@ func (item AnimeListElement) getListName() string {
 }
 
 func (item AnimeListElement) printInfo() {
-	fmt.Printf("[%04d] (%.2f) \"%s\" - %d Episode(s) - %s\n", item.ID, item.Base.HeuristicRating, item.Base.Name, item.NumEpisodes, item.Base.URL)
+	fmt.Printf("[ID-%03d] (%.2f) \"%s\" - %d Episode(s) - %s\n", item.ID, item.Base.HeuristicRating, item.Base.Name, item.NumEpisodes, item.Base.URL)
 }
 
 func (item AnimeListElement) wasFinished() bool {
