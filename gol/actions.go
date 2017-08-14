@@ -151,15 +151,17 @@ func push(args []string) int {
 		//Make a generic list element
 		listElement = CreateListElement(listName, newEntry, newEntry, "N/A", 50.0)
 	} else {
+		fmt.Println("Processing Info Online")
 		//Make a small gather info routine
 		mainChannel := make(chan ListElement)
-		gatherInfo(mainChannel, newEntry, sourceFunction)
+		go gatherInfo(mainChannel, newEntry, sourceFunction)
 		listElement = <-mainChannel
 	}
 
-	db := getDatabase()
-	db.Create(listElement)
-	db.Close()
+	listElement.printInfo()
+	fmt.Printf("Adding to %s list", listName)
+	listElement.saveElement()
+	listElement = nil
 
 	return 0
 }

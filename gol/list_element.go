@@ -5,17 +5,24 @@ import (
 	"math"
 	"reflect"
 	"time"
+
+	"github.com/jinzhu/gorm"
 )
 
 type ListElement interface {
 	rateElement() float32
 
 	getListName() string
-
 	wasFinished() bool
 	wasRemoved() bool
 
 	printInfo()
+
+	//Returns Primary Key
+	saveElement() int
+
+	//Intended for bulk operations ONLY
+	saveOrderedList(list OrderedList)
 
 	//TODO: Add "printDetailedInfo" and "getListElementFields"
 }
@@ -35,7 +42,7 @@ func (slice OrderedList) Swap(i, j int) {
 }
 
 type ListElementFields struct {
-	ID int
+	gorm.Model
 
 	URL         string `sql:"unique"`
 	Name        string `sql:"unique"`
@@ -102,6 +109,29 @@ func (item AnimeListElement) wasFinished() bool {
 
 func (item AnimeListElement) wasRemoved() bool {
 	return item.Base.WasRemoved
+}
+
+func (item AnimeListElement) saveElement() int {
+	db := getDatabase()
+	defer db.Close()
+
+	//NOTE: this is prone to breaking
+	if db.NewRecord(item) {
+		db.Create(&item)
+	} else {
+		db.Update(&item)
+	}
+
+	return item.ID
+}
+
+func (item AnimeListElement) saveOrderedList(list OrderedList) {
+	db := getDatabase()
+	for _, element := range list {
+		listEntry := element.(AnimeListElement)
+		db.Create(&listEntry)
+	}
+	db.Close()
 }
 
 // TODO: Implement the interface methods for each struct

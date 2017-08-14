@@ -22,11 +22,23 @@ func getDatabase() *gorm.DB {
 	return db
 }
 
-func saveAnimeEntries(db *gorm.DB, sortedElements OrderedList) {
-	for _, element := range sortedElements {
-		listEntry := element.(AnimeListElement)
-		db.Create(&listEntry)
+//Assumes a pointer is being passed
+func dbCreateListElement(entry ListElement) {
+	db := getDatabase()
+	fmt.Println(db.HasTable(entry))
+	fmt.Println(reflect.TypeOf(entry))
+
+	if db.NewRecord(entry) {
+		db.Create(&entry)
+	} else {
+		db.Update(&entry)
 	}
+
+	defer db.Close()
+}
+
+func saveAnimeEntries(db *gorm.DB, sortedElements OrderedList) {
+
 }
 
 func saveBookEntries(db *gorm.DB, sortedElements OrderedList) {

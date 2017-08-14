@@ -81,7 +81,8 @@ func rewriteFile(filename string) {
 	defer newFile.Close()
 	for _, line := range commentedLines {
 		newFile.WriteString(line)
-		newFile.WriteString("\n")
+		//Unfortunately, Windows line endings (just in case)
+		newFile.WriteString("\r\n")
 	}
 }
 
@@ -89,11 +90,10 @@ func ExtractDomainName(URL string) string {
 	startIdx := strings.Index(URL, "//") + 2
 	endIdx := strings.Index(URL[startIdx:], "/") + startIdx
 
-	//Check if this was invalid or, perhaps, a misguided comment
+	//Check if this was invalid
 	if startIdx < 2 || endIdx < 2 {
 		return ""
 	}
 
-	fmt.Printf("%s %d %d", URL, startIdx, endIdx)
 	return URL[startIdx:endIdx]
 }
