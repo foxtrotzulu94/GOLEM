@@ -1,7 +1,6 @@
 package gol
 
 import (
-	"fmt"
 	"math"
 	"reflect"
 	"time"
@@ -60,14 +59,6 @@ type ListElementFields struct {
 
 //TODO: Refactor to split the struct that implement the interface
 
-type AnimeListElement struct {
-	ID   int
-	Base ListElementFields `gorm:"polymorphic:Owner;"`
-
-	NumEpisodes int
-	AirTime     time.Time
-}
-
 type GameListElement struct {
 	ID   int
 	Base ListElementFields `gorm:"polymorphic:Owner;"`
@@ -83,58 +74,6 @@ type BookListElement struct {
 
 	Category string
 }
-
-//FIXME: Can't seem to pass by reference in here without breaking everything
-func (item AnimeListElement) rateElement() float32 {
-	if item.Base.IsRated {
-		return item.Base.HeuristicRating
-	}
-
-	lengthFactor := float32(1.5)
-	// dateFactor := float32(1.0)
-	return (item.Base.SourceRating * 10.0) - (float32(item.NumEpisodes) * lengthFactor)
-}
-
-func (item AnimeListElement) getListName() string {
-	return "anime"
-}
-
-func (item AnimeListElement) printInfo() {
-	fmt.Printf("[%04d] (%.2f) \"%s\" - %d Episode(s) - %s\n", item.ID, item.Base.HeuristicRating, item.Base.Name, item.NumEpisodes, item.Base.URL)
-}
-
-func (item AnimeListElement) wasFinished() bool {
-	return item.Base.WasViewed
-}
-
-func (item AnimeListElement) wasRemoved() bool {
-	return item.Base.WasRemoved
-}
-
-func (item AnimeListElement) saveElement() int {
-	db := getDatabase()
-	defer db.Close()
-
-	//NOTE: this is prone to breaking
-	if db.NewRecord(item) {
-		db.Create(&item)
-	} else {
-		db.Update(&item)
-	}
-
-	return item.ID
-}
-
-func (item AnimeListElement) saveOrderedList(list OrderedList) {
-	db := getDatabase()
-	for _, element := range list {
-		listEntry := element.(AnimeListElement)
-		db.Create(&listEntry)
-	}
-	db.Close()
-}
-
-// TODO: Implement the interface methods for each struct
 
 func CreateListElementFields(url, name, description string, sourceRating float32) ListElementFields {
 	var common ListElementFields
