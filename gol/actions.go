@@ -17,19 +17,34 @@ func Null([]string) int {
 	return 1
 }
 
+func validateListName(str string) string {
+	listName := strings.ToLower(str)
+	if !isValidListName(listName) {
+		fmt.Println(listName)
+		panic("Given List Name was invalid")
+	}
+
+	return listName
+}
+
+func requestInput(message string) string {
+	fmt.Printf("\n%s", message)
+	reader := bufio.NewReader(os.Stdin)
+	choice, _ := reader.ReadString('\n')
+	return choice
+}
+
 func gatherInfo(mainChannel chan ListElement, url string, source InfoSource) {
 	listElement := source(url)
-	mainChannel <- listElement
+	if mainChannel != nil {
+		mainChannel <- listElement
+	}
 }
 
 func scan(args []string) int {
 	// Read just one argument: the name of the list
 	// This is used throughout in the most generic manner in this function
-	listName := strings.ToLower(args[0])
-	if !isValidListName(listName) {
-		fmt.Println(listName)
-		panic("Given List Name was invalid")
-	}
+	listName := validateListName(args[0])
 
 	fileName := getListFilename(listName)
 	fileContents := readFile(fileName)
@@ -80,7 +95,7 @@ func scan(args []string) int {
 	sort.Sort(sort.Reverse(sortedElements))
 
 	fmt.Println("")
-	fmt.Printf("Storing %d new records in Database\n", activeRoutines)
+	fmt.Printf("Storing %d new records in Database\n", len(sortedElements))
 	saveListElements(listName, sortedElements)
 
 	fmt.Println("Cleaning up text file...")
@@ -91,11 +106,7 @@ func scan(args []string) int {
 
 func next(args []string) int {
 	//Load the required elements and then just pick the first one
-	listName := strings.ToLower(args[0])
-	if !isValidListName(listName) {
-		fmt.Println(listName)
-		panic("Given List Name was invalid")
-	}
+	listName := validateListName(args[0])
 
 	orderedList := loadListElements(listName, false, true, true)
 	orderedList[0].printInfo()
@@ -105,19 +116,12 @@ func next(args []string) int {
 func pop(args []string) int {
 	//Same as "next" but confirm deletion
 	//Load the required elements and then just pick the first one
-	listName := strings.ToLower(args[0])
-	if !isValidListName(listName) {
-		fmt.Println(listName)
-		panic("Given List Name was invalid")
-	}
+	listName := validateListName(args[0])
 
 	orderedList := loadListElements(listName, false, true, true)
 	orderedList[0].printInfo()
 
-	fmt.Print("\nAre you sure you want to proceed? (Y/n): ")
-	reader := bufio.NewReader(os.Stdin)
-	choice, _ := reader.ReadString('\n')
-	choice = strings.ToLower(choice)
+	choice := strings.ToLower(requestInput("Are you sure you want to proceed? (Y/n): "))
 
 	if strings.Contains(choice, "y") {
 		modifyListElement(orderedList[0], listName, "WasViewed", true)
@@ -130,17 +134,39 @@ func pop(args []string) int {
 }
 
 func push(args []string) int {
-	// TODO: finish implementing
-	return 1
+	// This action is slightly simpler than "scan"
+	// Just take the named element, rate it and then insert it in the database
+
+	listName := validateListName(args[0])
+	newEntry := args[1]
+
+	sourceFunction := determineAppropriateSource(newEntry)
+	var listElement ListElement
+	if sourceFunction == nil {
+		fmt.Println("\"", newEntry, "\"")
+		choice := strings.ToLower(requestInput("Cannot determine appropriate source. Add anyway? (Y/n): "))
+		if strings.Contains(choice, "n") {
+			os.Exit(0)
+		}
+		//Make a generic list element
+		listElement = CreateListElement(listName, newEntry, newEntry, "N/A", 50.0)
+	} else {
+		//Make a small gather info routine
+		mainChannel := make(chan ListElement)
+		gatherInfo(mainChannel, newEntry, sourceFunction)
+		listElement = <-mainChannel
+	}
+
+	db := getDatabase()
+	db.Create(listElement)
+	db.Close()
+
+	return 0
 }
 
 func list(args []string) int {
 	//Load all active items
-	listName := strings.ToLower(args[0])
-	if !isValidListName(listName) {
-		fmt.Println(listName)
-		panic("Given List Name was invalid")
-	}
+	listName := validateListName(args[0])
 
 	orderedList := loadListElements(listName, false, true, true)
 	for _, entry := range orderedList {

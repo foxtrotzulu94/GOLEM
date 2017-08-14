@@ -3,15 +3,20 @@ package gol
 import (
 	"fmt"
 	"math"
+	"reflect"
 	"time"
 )
 
 type ListElement interface {
 	rateElement() float32
+
 	getListName() string
+
 	wasFinished() bool
 	wasRemoved() bool
+
 	printInfo()
+
 	//TODO: Add "printDetailedInfo" and "getListElementFields"
 }
 
@@ -45,6 +50,8 @@ type ListElementFields struct {
 	OwnerId   int
 	OwnerType string
 }
+
+//TODO: Refactor to split the struct that implement the interface
 
 type AnimeListElement struct {
 	ID   int
@@ -111,4 +118,19 @@ func CreateListElementFields(url, name, description string, sourceRating float32
 	common.WasViewed = false
 
 	return common
+}
+
+//RegisteredTypes Map of all usable types. Returns a pointer to the type
+var RegisteredTypes = map[string]ListElement{
+	"anime": &AnimeListElement{},
+}
+
+func CreateListElement(elementType, url, name, description string, sourceRating float32) ListElement {
+	baseElement := CreateListElementFields(url, name, description, sourceRating)
+	retVal := RegisteredTypes[elementType]
+
+	//NOTE: Black magic through reflection due to the inability to modify a struct generically
+	reflect.ValueOf(retVal).Elem().FieldByName("Base").Set(reflect.ValueOf(baseElement))
+
+	return retVal
 }

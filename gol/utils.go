@@ -88,5 +88,12 @@ func rewriteFile(filename string) {
 func ExtractDomainName(URL string) string {
 	startIdx := strings.Index(URL, "//") + 2
 	endIdx := strings.Index(URL[startIdx:], "/") + startIdx
+
+	//Check if this was invalid or, perhaps, a misguided comment
+	if startIdx < 2 || endIdx < 2 {
+		return ""
+	}
+
+	fmt.Printf("%s %d %d", URL, startIdx, endIdx)
 	return URL[startIdx:endIdx]
 }
