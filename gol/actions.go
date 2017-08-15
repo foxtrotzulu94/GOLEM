@@ -1,7 +1,6 @@
 package gol
 
 import (
-	"bufio"
 	"fmt"
 	"os"
 	"sort"
@@ -20,13 +19,6 @@ func validateListName(str string) string {
 	}
 
 	return listName
-}
-
-func requestInput(message string) string {
-	fmt.Printf("\n%s", message)
-	reader := bufio.NewReader(os.Stdin)
-	choice, _ := reader.ReadString('\n')
-	return choice
 }
 
 func gatherInfo(mainChannel chan ListElement, url string, source InfoSource) {
@@ -116,7 +108,7 @@ func pop(args []string) int {
 	orderedList := loadListElements(listName, false, true, true)
 	orderedList[0].printInfo()
 
-	choice := strings.ToLower(requestInput("Are you sure you want to proceed? (Y/n): "))
+	choice := strings.ToLower(RequestInput("Are you sure you want to proceed? (Y/n): "))
 
 	if strings.Contains(choice, "y") {
 		modifyListElement(orderedList[0], listName, "WasViewed", true)
@@ -139,7 +131,7 @@ func push(args []string) int {
 	var listElement ListElement
 	if sourceFunction == nil {
 		fmt.Println("\"", newEntry, "\"")
-		choice := strings.ToLower(requestInput("Cannot determine appropriate source. Add anyway? (Y/n): "))
+		choice := strings.ToLower(RequestInput("Cannot determine appropriate source. Add anyway? (Y/n): "))
 		if strings.Contains(choice, "n") {
 			os.Exit(0)
 		}
@@ -205,10 +197,7 @@ func changeListElementField(args []string, fieldName string, newValue interface{
 		return
 	}
 
-	fmt.Print("\nAre you sure you want to proceed? (Y/n): ")
-	reader := bufio.NewReader(os.Stdin)
-	choice, _ := reader.ReadString('\n')
-	choice = strings.ToLower(choice)
+	choice := strings.ToLower(RequestInput("Are you sure you want to proceed? (Y/n): "))
 
 	if strings.Contains(choice, "y") {
 		modifyListElementFields(listName, "WasViewed", true, listID)

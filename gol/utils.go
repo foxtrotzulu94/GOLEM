@@ -1,6 +1,7 @@
 package gol
 
 import (
+	"bufio"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -107,4 +108,11 @@ func PrintSetWidth(text, linePrefix, newlineSeq string, columnWidth int) {
 		}
 		fmt.Print(linePrefix, text[i:extent], newlineSeq)
 	}
+}
+
+func RequestInput(message string) string {
+	fmt.Printf("\n%s", message)
+	reader := bufio.NewReader(os.Stdin)
+	input, _ := reader.ReadString('\n')
+	return input
 }

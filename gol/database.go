@@ -38,15 +38,15 @@ func dbCreateListElement(entry ListElement) {
 }
 
 func saveAnimeEntries(db *gorm.DB, sortedElements OrderedList) {
-
+	panic("This method should not be called")
 }
 
 func saveBookEntries(db *gorm.DB, sortedElements OrderedList) {
-	panic("Not Implemented Yet")
+	panic("This method should not be called")
 }
 
 func saveGameEntries(db *gorm.DB, sortedElements OrderedList) {
-	panic("Not Implemented Yet")
+	panic("This method should not be called")
 }
 
 func saveListElements(elementType string, sortedElements OrderedList) {
