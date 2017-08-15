@@ -27,8 +27,21 @@ func (item AnimeListElement) getListName() string {
 	return "anime"
 }
 
+func (item AnimeListElement) getListElementFields() ListElementFields {
+	return item.Base
+}
+
 func (item AnimeListElement) printInfo() {
 	fmt.Printf("[ID-%03d] (%.2f) \"%s\" - %d Episode(s) - %s\n", item.ID, item.Base.HeuristicRating, item.Base.Name, item.NumEpisodes, item.Base.URL)
+}
+
+func (item AnimeListElement) printDetailedInfo() {
+	fmt.Printf("[ID-%03d] \"%s\" (%s)\n", item.ID, item.Base.Name, item.Base.URL)
+	fmt.Printf("\tHeuristic Rating: %.2f\n", item.Base.HeuristicRating)
+	fmt.Printf("\tEpisodes: %d | Base Rating: %.2f \n", item.NumEpisodes, item.Base.SourceRating)
+
+	PrintSetWidth(item.Base.Description, "\t ", "\n", 80)
+	fmt.Println("")
 }
 
 func (item AnimeListElement) wasFinished() bool {

@@ -97,3 +97,14 @@ func ExtractDomainName(URL string) string {
 
 	return URL[startIdx:endIdx]
 }
+
+func PrintSetWidth(text, linePrefix, newlineSeq string, columnWidth int) {
+	length := len(text)
+	for i := 0; i < length; i += columnWidth {
+		var extent int = i + columnWidth
+		if extent > length { //Slicing beyond length causes an exception. Careful with this
+			extent = length
+		}
+		fmt.Print(linePrefix, text[i:extent], newlineSeq)
+	}
+}

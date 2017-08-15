@@ -11,18 +11,17 @@ type ListElement interface {
 	rateElement() float32
 
 	getListName() string
+	getListElementFields() ListElementFields
 	wasFinished() bool
 	wasRemoved() bool
 
 	printInfo()
+	printDetailedInfo()
 
 	//Returns Primary Key
 	saveElement() int
-
 	//Intended for bulk operations ONLY
 	saveOrderedList(list OrderedList)
-
-	//TODO: Add "printDetailedInfo" and "getListElementFields"
 }
 
 type OrderedList []ListElement

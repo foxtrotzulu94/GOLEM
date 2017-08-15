@@ -174,18 +174,24 @@ func list(args []string) int {
 }
 
 func detail(args []string) int {
-	// TODO: finish implementing
-	return 1
+	listName := validateListName(args[0])
+	listID, _ := strconv.Atoi(args[1])
+
+	entry := getElementByID(listName, listID)
+	if entry == nil {
+		fmt.Printf("Entry with ID %d not found in %s list", listID, listName)
+		return 1
+	}
+
+	entry.printDetailedInfo()
+
+	return 0
 }
 
 //This is used mostly by the "finished" and "remove" actions
 func changeListElementField(args []string, fieldName string, newValue interface{}) {
 	//First arg is listName, second is ID
-	listName := strings.ToLower(args[0])
-	if !isValidListName(listName) {
-		fmt.Println(listName)
-		panic("Given List Name was invalid")
-	}
+	listName := validateListName(args[0])
 	listID, _ := strconv.Atoi(args[1])
 	entry := getElementByID(listName, listID)
 	entry.printInfo()
@@ -233,7 +239,7 @@ func review(args []string) int {
 	reviewFinished := strings.Contains(filters, "viewed") || strings.Contains(filters, "finished")
 	reviewRemoved := strings.Contains(filters, "removed")
 	if !reviewFinished && !reviewRemoved {
-		fmt.Println("A valid option was not selected")
+		return list(args)
 	}
 
 	if reviewFinished {
@@ -259,15 +265,44 @@ func review(args []string) int {
 	return 0
 }
 
+func search(args []string) int {
+	listName := validateListName(args[0])
+	keyword := strings.ToLower(strings.TrimSpace(args[1]))
+
+	orderedList := loadListElements(listName, false, false, false)
+	//Do a linear search
+	var results int
+	for _, entry := range orderedList {
+		if strings.Contains(strings.ToLower(entry.getListElementFields().Name), keyword) {
+			entry.printInfo()
+			results++
+		}
+	}
+
+	if results == 0 {
+		fmt.Println("No results found")
+	}
+
+	return 0
+}
+
 //Actions The functions that this program can do.
 var Actions = map[string]ManagerAction{
 	"scan":     scan,
+	"load":     scan,
 	"next":     next,
 	"push":     push,
 	"pop":      pop,
 	"list":     list,
 	"detail":   detail,
+	"view":     detail,
+	"info":     detail,
 	"finished": finished,
+	"finish":   finished,
 	"remove":   remove,
+	"delete":   remove,
 	"review":   review,
+	"check":    review,
+	"find":     search,
+	"search":   search,
 }

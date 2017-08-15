@@ -117,11 +117,15 @@ func getElementByID(elementType string, elementID int) ListElement {
 	case "anime":
 		var entry AnimeListElement
 		db.First(&entry, elementID)
+		if elementID == 0 {
+			return nil
+		}
 
 		var BaseElement ListElementFields
 		tableName := gorm.ToDBName(reflect.TypeOf(entry).Name()) + "s" //It would seem the gorm people missed the 's'
 		db.Where("owner_id = ? AND owner_type = ?", elementID, tableName).Find(&BaseElement)
 		entry.Base = BaseElement
+
 		return entry
 	case "books":
 		panic("Not Implemented Yet")
