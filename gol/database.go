@@ -18,7 +18,10 @@ func getDatabase() *gorm.DB {
 	check(err)
 
 	//Handle initialization/creation/migration automatically if possible
-	db.AutoMigrate(&ListElementFields{}, &AnimeListElement{})
+	db.AutoMigrate(&ListElementFields{})
+	for _, val := range RegisteredTypes {
+		db.AutoMigrate(val)
+	}
 
 	return db
 }

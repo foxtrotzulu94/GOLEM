@@ -9,10 +9,9 @@ import (
 )
 
 // What list are currently valid names to use in this program
-var supportedListNames = []string{"anime" /*"games", "books"*/}
 
 func isValidListName(listName string) bool {
-	for _, name := range supportedListNames {
+	for name := range RegisteredTypes {
 		if name == listName {
 			return true
 		}

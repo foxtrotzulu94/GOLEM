@@ -10,7 +10,7 @@ import (
 type ListElement interface {
 	rateElement() float32
 
-	getStoredName() string
+	getListName() string
 	getStoredName() string
 	getDerivedID() int
 	getListElementFields() ListElementFields
@@ -81,7 +81,8 @@ func CreateListElementFields(url, name, description string, sourceRating float32
 
 //RegisteredTypes Map of all usable types. Returns a pointer to the type
 var RegisteredTypes = map[string]ListElement{
-	"anime": &AnimeListElement{},
+	"anime":  &AnimeListElement{},
+	"movies": &MovieListElement{},
 }
 
 func CreateListElement(elementType, url, name, description string, sourceRating float32) ListElement {

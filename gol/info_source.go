@@ -20,16 +20,22 @@ func check(e error) {
 	}
 }
 
-func SourceNull(URL string) ListElement {
-	return nil
-}
-
-func SourceMyAnimeList(URL string) ListElement {
+func retrieveHTML(URL string) *html.Node {
 	// Request the page
 	resp, err := http.Get(URL)
 	check(err)
 	root, err := html.Parse(resp.Body)
 	check(err)
+
+	return root
+}
+
+func SourceNull(URL string) ListElement {
+	return nil
+}
+
+func SourceMyAnimeList(URL string) ListElement {
+	root := retrieveHTML(URL)
 
 	// Define the matcher so it collects all the tags of interest in one pass, we'll sort them out later
 	generalMatcher := func(n *html.Node) bool {
@@ -110,8 +116,60 @@ func SourceAmazonCanada(URL string) ListElement {
 }
 
 func SourceIMDB(URL string) ListElement {
-	//TODO:
-	panic("Not Implemented Yet")
+	root := retrieveHTML(URL)
+
+	// Define the matcher so it collects all the tags of interest in one pass, we'll sort them out later
+	generalMatcher := func(n *html.Node) bool {
+		if n == nil {
+			return false
+		}
+
+		isName := scrape.Attr(n, "itemprop") == "name" && n.DataAtom == atom.H1
+		isDescription := scrape.Attr(n, "itemprop") == "description"
+		isScore := scrape.Attr(n, "itemprop") == "ratingValue"
+		isViews := scrape.Attr(n, "itemprop") == "ratingCount"
+
+		return (isName || isDescription || isScore || isViews)
+	}
+
+	//Find and iterate
+	matches := scrape.FindAll(root, generalMatcher)
+
+	var name, description string
+	var sourceRating float32
+	var count int
+	for _, tagMatch := range matches {
+		//Place it accordingly
+		stringMatch := scrape.Text(tagMatch)
+
+		itempropVal := scrape.Attr(tagMatch, "itemprop")
+		switch itempropVal {
+		case "name":
+			name = stringMatch
+		case "description":
+			description = stringMatch
+		case "ratingValue":
+			floatVal, _ := strconv.ParseFloat(stringMatch, 32)
+			if floatVal == 0 {
+				continue
+			}
+			sourceRating = float32(floatVal)
+		case "ratingCount":
+			reviews, _ := strconv.Atoi(stringMatch)
+			if reviews > 0 && count == 0 {
+				count = reviews
+			}
+		}
+	}
+
+	//Create the object and populate fields
+	var retVal MovieListElement
+	retVal.Base = CreateListElementFields(URL, name, description, sourceRating)
+	retVal.ReviewCount = count
+	retVal.Base.HeuristicRating = retVal.rateElement()
+	retVal.Base.IsRated = true
+
+	return retVal
 }
 
 var Sources = map[string]InfoSource{
