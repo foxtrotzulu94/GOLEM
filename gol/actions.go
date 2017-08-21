@@ -145,9 +145,13 @@ func push(args []string) int {
 		listElement = <-mainChannel
 	}
 
+	if listElement == nil {
+		return 1
+	}
+
+	listElement = listElement.saveElement()
 	listElement.printInfo()
-	fmt.Printf("Adding to %s list", listName)
-	listElement.saveElement()
+	fmt.Printf("Added to %s list", listName)
 	listElement = nil
 
 	return 0

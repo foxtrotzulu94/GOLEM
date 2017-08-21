@@ -21,7 +21,7 @@ type ListElement interface {
 	printDetailedInfo()
 
 	//Returns Primary Key
-	saveElement() int
+	saveElement() ListElement
 	//Intended for bulk operations ONLY
 	saveOrderedList(list OrderedList)
 	//get a single item
@@ -83,6 +83,7 @@ func CreateListElementFields(url, name, description string, sourceRating float32
 var RegisteredTypes = map[string]ListElement{
 	"anime":  &AnimeListElement{},
 	"movies": &MovieListElement{},
+	"games":  &GameListElement{},
 }
 
 func CreateListElement(elementType, url, name, description string, sourceRating float32) ListElement {

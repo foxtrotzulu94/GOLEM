@@ -64,7 +64,7 @@ func (item AnimeListElement) wasRemoved() bool {
 	return item.Base.WasRemoved
 }
 
-func (item AnimeListElement) saveElement() int {
+func (item AnimeListElement) saveElement() ListElement {
 	db := getDatabase()
 	defer db.Close()
 
@@ -75,7 +75,7 @@ func (item AnimeListElement) saveElement() int {
 		db.Update(&item)
 	}
 
-	return item.ID
+	return item
 }
 
 func (item AnimeListElement) saveOrderedList(list OrderedList) {
