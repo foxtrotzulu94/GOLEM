@@ -2,7 +2,11 @@ package gol
 
 import (
 	"fmt"
+	"reflect"
+	"sort"
 	"time"
+
+	"github.com/jinzhu/gorm"
 )
 
 type AnimeListElement struct {
@@ -25,6 +29,14 @@ func (item AnimeListElement) rateElement() float32 {
 
 func (item AnimeListElement) getListName() string {
 	return "anime"
+}
+
+func (item AnimeListElement) getStoredName() string {
+	return gorm.ToDBName(reflect.TypeOf(item).Name()) + "s"
+}
+
+func (item AnimeListElement) getDerivedID() int {
+	return item.ID
 }
 
 func (item AnimeListElement) getListElementFields() ListElementFields {
@@ -73,4 +85,43 @@ func (item AnimeListElement) saveOrderedList(list OrderedList) {
 		db.Create(&listEntry)
 	}
 	db.Close()
+}
+
+func (item AnimeListElement) load(derivedID int) ListElement {
+	db := getDatabase()
+	defer db.Close()
+	if derivedID == 0 {
+		return nil
+	}
+	db.First(&item, derivedID)
+
+	var BaseElement ListElementFields
+	tableName := item.getStoredName()
+	db.Where("owner_id = ? AND owner_type = ?", derivedID, tableName).Find(&BaseElement)
+	item.Base = BaseElement
+
+	return item
+}
+
+func (item AnimeListElement) loadOrderedList() OrderedList {
+	db := getDatabase()
+	defer db.Close()
+
+	var MainList []AnimeListElement
+	db.Find(&MainList)
+	InterfaceList := make([]ListElement, len(MainList))
+
+	for i, item := range MainList {
+		var BaseElement ListElementFields
+		tableName := item.getStoredName()
+		db.Where("owner_id = ? AND owner_type = ?", item.getDerivedID(), tableName).First(&BaseElement)
+
+		item.Base = BaseElement
+		InterfaceList[i] = item
+	}
+
+	RetVal := OrderedList(InterfaceList)
+	sort.Sort(sort.Reverse(RetVal))
+
+	return RetVal
 }

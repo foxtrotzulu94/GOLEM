@@ -10,7 +10,9 @@ import (
 type ListElement interface {
 	rateElement() float32
 
-	getListName() string
+	getStoredName() string
+	getStoredName() string
+	getDerivedID() int
 	getListElementFields() ListElementFields
 	wasFinished() bool
 	wasRemoved() bool
@@ -22,6 +24,10 @@ type ListElement interface {
 	saveElement() int
 	//Intended for bulk operations ONLY
 	saveOrderedList(list OrderedList)
+	//get a single item
+	load(derivedID int) ListElement
+	//
+	loadOrderedList() OrderedList
 }
 
 type OrderedList []ListElement
@@ -39,12 +45,7 @@ func (slice OrderedList) Swap(i, j int) {
 }
 
 func (slice OrderedList) save() {
-	switch subType := slice[0].(type) {
-	case AnimeListElement:
-		subType.saveOrderedList(slice)
-	default:
-		panic("Unknown type!")
-	}
+	slice[0].saveOrderedList(slice)
 }
 
 type ListElementFields struct {

@@ -92,25 +92,26 @@ func SourceMyAnimeList(URL string) ListElement {
 func SourceSteamOnline(URL string) ListElement {
 	//TODO:
 	panic("Not Implemented Yet")
-	return nil
 }
 
 func SourceMetacritic(URL string) ListElement {
 	//TODO:
 	panic("Not Implemented Yet")
-	return nil
 }
 
 func SourceAmazonUS(URL string) ListElement {
 	//TODO:
 	panic("Not Implemented Yet")
-	return nil
 }
 
 func SourceAmazonCanada(URL string) ListElement {
 	//TODO:
 	panic("Not Implemented Yet")
-	return nil
+}
+
+func SourceIMDB(URL string) ListElement {
+	//TODO:
+	panic("Not Implemented Yet")
 }
 
 var Sources = map[string]InfoSource{
@@ -119,6 +120,7 @@ var Sources = map[string]InfoSource{
 	"www.amazon.ca":          SourceAmazonCanada,
 	"amazon.com":             SourceAmazonUS,
 	"www.metacritic.com":     SourceMetacritic,
+	"www.imdb.com":           SourceIMDB,
 }
 
 func determineAppropriateSource(URL string) InfoSource {

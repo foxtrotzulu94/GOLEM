@@ -45,15 +45,14 @@ func interactiveModeLoop() {
 }
 
 func main() {
-	//cmdArgs := []string{"list", "anime", ""}
-	cmdArgs := os.Args[1:]
-
 	interactiveMode := flag.Bool("interactive", false, "Turn on interactive mode for REPL style functionality")
 	flag.Parse()
 
 	if interactiveMode != nil && *interactiveMode {
 		interactiveModeLoop()
 	} else {
+		//cmdArgs := []string{"list", "anime", ""}
+		cmdArgs := os.Args[1:]
 		oneShotMode(cmdArgs)
 	}
 

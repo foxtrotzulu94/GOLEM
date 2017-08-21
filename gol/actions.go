@@ -111,7 +111,7 @@ func pop(args []string) int {
 	choice := strings.ToLower(RequestInput("Are you sure you want to proceed? (Y/n): "))
 
 	if strings.Contains(choice, "y") {
-		modifyListElement(orderedList[0], listName, "WasViewed", true)
+		modifyListElementFields(orderedList[0], listName, "WasViewed", true)
 		fmt.Println("Marked as finished!")
 	} else {
 		os.Exit(0)
@@ -200,7 +200,7 @@ func changeListElementField(args []string, fieldName string, newValue interface{
 	choice := strings.ToLower(RequestInput("Are you sure you want to proceed? (Y/n): "))
 
 	if strings.Contains(choice, "y") {
-		modifyListElementFields(listName, "WasViewed", true, listID)
+		modifyListElementFields(entry, listName, "WasViewed", true)
 		fmt.Println("Marked as finished!")
 	} else {
 		os.Exit(0)
@@ -224,7 +224,7 @@ func review(args []string) int {
 		//just list args
 		return list(args)
 	}
-
+	//FIXME: Maybe error out when removed/viewed/finished is miss spelled
 	reviewFinished := strings.Contains(filters, "viewed") || strings.Contains(filters, "finished")
 	reviewRemoved := strings.Contains(filters, "removed")
 	if !reviewFinished && !reviewRemoved {
