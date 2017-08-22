@@ -21,12 +21,25 @@ func oneShotMode(cmdArgs []string) {
 	fmt.Println(cmdArgs)
 	fmt.Println("")
 
-	if action, ok := gol.Actions[strings.ToLower(cmdArgs[0])]; ok {
-		action(cmdArgs[1:])
-	} else {
+	//Check the list name
+	if len(cmdArgs) >= 2 {
+		if _, ok := gol.RegisteredTypes[strings.ToLower(cmdArgs[1])]; !ok {
+			fmt.Printf("List \"%s\" was not recognized\n", cmdArgs[1])
+			return
+		}
+	}
+
+	//Check the action
+	var action gol.ManagerAction
+	if actPtr, ok := gol.Actions[strings.ToLower(cmdArgs[0])]; !ok {
 		fmt.Printf("Action \"%s\" was not recognized\n", cmdArgs[0])
 		fmt.Println("\tAdditional Parameters: ", cmdArgs[1:])
+		return
+	} else {
+		action = actPtr
 	}
+
+	action(cmdArgs[1:])
 }
 
 func interactiveModeLoop() {

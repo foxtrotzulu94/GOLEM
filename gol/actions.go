@@ -6,6 +6,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"sync"
 )
 
 //ManagerAction Defines a type signature for all the manager methods
@@ -29,6 +30,23 @@ func gatherInfo(mainChannel chan ListElement, url string, source InfoSource) {
 }
 
 func scan(args []string) int {
+	//If no list is specified, just do all of them!
+	if len(args) < 1 {
+		var synch sync.WaitGroup
+		synch.Add(len(RegisteredTypes))
+
+		for listName := range RegisteredTypes {
+			go func(activeList string) {
+				defer synch.Done()
+				scan([]string{activeList})
+			}(listName)
+		}
+
+		synch.Wait()
+		fmt.Println("All registered types were scanned")
+		return 0
+	}
+
 	// Read just one argument: the name of the list
 	// This is used throughout in the most generic manner in this function
 	listName := validateListName(args[0])

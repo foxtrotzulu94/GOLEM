@@ -172,7 +172,12 @@ func SourceSteamOnline(URL string) ListElement {
 	//CHECK that everything was scraped alright
 	if len(name) < 1 {
 		startIdx := strings.Index(URL, "app/") + len("app/")
-		endIdx := strings.Index(URL[startIdx:], "/") + startIdx
+		endIdx := strings.Index(URL[startIdx:], "/")
+		if endIdx < 0 {
+			endIdx = len(URL)
+		} else {
+			endIdx += startIdx
+		}
 
 		appID := URL[startIdx:endIdx]
 		infoURL := "http://store.steampowered.com/api/appdetails?appids=" + appID
@@ -186,7 +191,13 @@ func SourceSteamOnline(URL string) ListElement {
 		check(err)
 
 		if canFallback {
-			newURL, _ := jsonparser.GetString(data, appID, "data", "metacritic", "url")
+			newURL, err := jsonparser.GetString(data, appID, "data", "metacritic", "url")
+
+			if !strings.Contains(newURL, "http") {
+				fmt.Println("Steam Parse Error on ", URL, err, "- Skipping")
+				return nil
+			}
+
 			//Fallback to Metacritic
 			fmt.Println("Steam Parse Error on ", URL, "- Falling back to Metacritic")
 			return SourceMetacritic(newURL)
