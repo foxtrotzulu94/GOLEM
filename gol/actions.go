@@ -110,6 +110,12 @@ func scan(args []string) int {
 }
 
 func next(args []string) int {
+	if len(args) < 1 {
+		fmt.Println("\tUsage: manager next <list name>")
+		PrintKnownLists()
+		return 1
+	}
+
 	//Load the required elements and then just pick the first one
 	listName := validateListName(args[0])
 
@@ -119,6 +125,12 @@ func next(args []string) int {
 }
 
 func pop(args []string) int {
+	if len(args) < 1 {
+		fmt.Println("\tUsage: manager pop <list name>")
+		PrintKnownLists()
+		return 1
+	}
+
 	//Same as "next" but confirm deletion
 	//Load the required elements and then just pick the first one
 	listName := validateListName(args[0])
@@ -139,6 +151,12 @@ func pop(args []string) int {
 }
 
 func push(args []string) int {
+	if len(args) < 1 {
+		fmt.Println("\tUsage: manager push|add <list name> <URL>")
+		PrintKnownLists()
+		return 1
+	}
+
 	// This action is slightly simpler than "scan"
 	// Just take the named element, rate it and then insert it in the database
 
@@ -176,6 +194,12 @@ func push(args []string) int {
 }
 
 func list(args []string) int {
+	if len(args) < 1 {
+		fmt.Println("\tUsage: manager list <list name>")
+		PrintKnownLists()
+		return 1
+	}
+
 	//Load all active items
 	listName := validateListName(args[0])
 
@@ -188,6 +212,12 @@ func list(args []string) int {
 }
 
 func detail(args []string) int {
+	if len(args) < 2 {
+		fmt.Println("\tUsage: manager detail|view|info <list name> <ID>")
+		PrintKnownLists()
+		return 1
+	}
+
 	listName := validateListName(args[0])
 	listID, _ := strconv.Atoi(args[1])
 
@@ -230,16 +260,34 @@ func changeListElementField(args []string, fieldName string, newValue interface{
 }
 
 func finished(args []string) int {
+	if len(args) < 1 {
+		fmt.Println("\tUsage: manager finished|finish <list name> <ID>")
+		PrintKnownLists()
+		return 1
+	}
+
 	changeListElementField(args, "WasViewed", true)
 	return 0
 }
 
 func remove(args []string) int {
+	if len(args) < 1 {
+		fmt.Println("\tUsage: manager remove|delete <list name> <ID>")
+		PrintKnownLists()
+		return 1
+	}
+
 	changeListElementField(args, "WasRemoved", true)
 	return 0
 }
 
 func review(args []string) int {
+	if len(args) < 1 {
+		fmt.Println("\tUsage: manager review|check <list name> [viewed|finished|removed]")
+		PrintKnownLists()
+		return 1
+	}
+
 	listName := args[0]
 	filters := strings.ToLower(strings.Join(args[1:], " "))
 	if len(filters) < 1 {
@@ -277,6 +325,12 @@ func review(args []string) int {
 }
 
 func search(args []string) int {
+	if len(args) != 2 {
+		fmt.Println("\tUsage: manager search|find <list name> <string>")
+		PrintKnownLists()
+		return 1
+	}
+
 	listName := validateListName(args[0])
 	keyword := strings.ToLower(strings.TrimSpace(args[1]))
 
@@ -299,21 +353,34 @@ func search(args []string) int {
 
 //Actions The functions that this program can do.
 var Actions = map[string]ManagerAction{
-	"scan":     scan,
-	"load":     scan,
-	"next":     next,
-	"push":     push,
-	"pop":      pop,
-	"list":     list,
-	"detail":   detail,
-	"view":     detail,
-	"info":     detail,
-	"finished": finished,
-	"finish":   finished,
-	"remove":   remove,
-	"delete":   remove,
-	"review":   review,
-	"check":    review,
-	"find":     search,
-	"search":   search,
+	"scan":      scan,
+	"load":      scan,
+	"next":      next,
+	"push":      push,
+	"add":       push,
+	"pop":       pop,
+	"list":      list,
+	"detail":    detail,
+	"view":      detail,
+	"info":      detail,
+	"finished":  finished,
+	"finish":    finished,
+	"remove":    remove,
+	"delete":    remove,
+	"review":    review,
+	"check":     review,
+	"find":      search,
+	"search":    search,
+	"lists":     enumerate,
+	"enumerate": enumerate,
+}
+
+func enumerate(args []string) int {
+	PrintKnownLists()
+	return 0
+}
+
+func functions(args []string) int {
+	PrintKnownActions()
+	return 0
 }

@@ -26,7 +26,7 @@ type ListElement interface {
 	saveOrderedList(list OrderedList)
 	//get a single item
 	load(derivedID int) ListElement
-	//
+	//Load all known elements of this type in sorted order
 	loadOrderedList() OrderedList
 }
 
@@ -79,13 +79,6 @@ func CreateListElementFields(url, name, description string, sourceRating float32
 	return common
 }
 
-//RegisteredTypes Map of all usable types. Returns a pointer to the type
-var RegisteredTypes = map[string]ListElement{
-	"anime":  &AnimeListElement{},
-	"movies": &MovieListElement{},
-	"games":  &GameListElement{},
-}
-
 func CreateListElement(elementType, url, name, description string, sourceRating float32) ListElement {
 	baseElement := CreateListElementFields(url, name, description, sourceRating)
 	retVal := RegisteredTypes[elementType]
@@ -94,4 +87,11 @@ func CreateListElement(elementType, url, name, description string, sourceRating 
 	reflect.ValueOf(retVal).Elem().FieldByName("Base").Set(reflect.ValueOf(baseElement))
 
 	return retVal
+}
+
+//RegisteredTypes Map of all usable types. Returns a pointer to the type
+var RegisteredTypes = map[string]ListElement{
+	"anime":  &AnimeListElement{},
+	"movies": &MovieListElement{},
+	"games":  &GameListElement{},
 }

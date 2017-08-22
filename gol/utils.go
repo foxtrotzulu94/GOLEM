@@ -2,6 +2,7 @@ package gol
 
 import (
 	"bufio"
+	"bytes"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -99,13 +100,28 @@ func ExtractDomainName(URL string) string {
 }
 
 func PrintSetWidth(text, linePrefix, newlineSeq string, columnWidth int) {
+	if columnWidth < 1 {
+		columnWidth = 65535
+	}
+
 	length := len(text)
-	for i := 0; i < length; i += columnWidth {
-		var extent int = i + columnWidth
-		if extent > length { //Slicing beyond length causes an exception. Careful with this
-			extent = length
+	charsInLine, nextWordIndex := 0, 0
+	for idx := 0; idx < length; {
+		nextWordIndex = strings.IndexRune(text[charsInLine+idx:], ' ')
+
+		if nextWordIndex < 0 {
+			//TODO: implement slicing here
+			fmt.Print(linePrefix, text[idx:], newlineSeq)
+			return
 		}
-		fmt.Print(linePrefix, text[i:extent], newlineSeq)
+
+		if charsInLine+nextWordIndex > columnWidth {
+			fmt.Print(linePrefix, text[idx:idx+charsInLine], newlineSeq)
+			idx += charsInLine
+			charsInLine = 0
+		} else {
+			charsInLine += nextWordIndex + 1
+		}
 	}
 }
 
@@ -114,4 +130,25 @@ func RequestInput(message string) string {
 	reader := bufio.NewReader(os.Stdin)
 	input, _ := reader.ReadString('\n')
 	return input
+}
+
+func PrintKnownLists() {
+	fmt.Print("\tLists: [ ")
+	for namedList := range RegisteredTypes {
+		fmt.Print(namedList, " ")
+	}
+	fmt.Println("]")
+}
+
+func PrintKnownActions() {
+	var buffer bytes.Buffer
+
+	fmt.Print("\tActions: [ ")
+	for namedList := range Actions {
+		buffer.WriteString(namedList)
+		buffer.WriteString(" ")
+	}
+	buffer.WriteString("]")
+	PrintSetWidth(buffer.String(), "", "\n\t", 80)
+	fmt.Println("")
 }
