@@ -10,7 +10,7 @@ import (
 )
 
 func printUsage() {
-	fmt.Println("\tUsage: manager [action] [list name] [options]")
+	fmt.Println("\tUsage:", os.Args[0], "[action] [list name] [options]")
 	fmt.Println("\tArguments depend on Options being executed")
 	fmt.Println("")
 	gol.PrintKnownActions()
@@ -24,14 +24,18 @@ func oneShotMode(cmdArgs []string) {
 		return
 	}
 
+	fmt.Println(cmdArgs)
+	fmt.Println("")
+
 	if strings.EqualFold("help", cmdArgs[0]) {
 		gol.PrintKnownActions()
 		gol.PrintKnownLists()
 		return
 	}
-
-	fmt.Println(cmdArgs)
-	fmt.Println("")
+	if strings.EqualFold("actions", cmdArgs[0]) {
+		gol.PrintKnownActions()
+		return
+	}
 
 	//Check the list name
 	if len(cmdArgs) >= 2 {

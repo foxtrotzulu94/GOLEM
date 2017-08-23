@@ -69,13 +69,13 @@ func SourceMyAnimeList(URL string) ListElement {
 			if scrape.Attr(tagMatch, "data-title") == "score" {
 				floatVal, e := strconv.ParseFloat(stringMatch, 32)
 				if e != nil {
-					fmt.Println(URL)
-					panic(e)
+					fmt.Println("Error parsing score for", URL)
+					floatVal = 8
 				}
 				sourceRating = float32(floatVal)
 				if floatVal < 7.00 {
 					//Fuck it, I'm not watching bad anime.
-					fmt.Println("Discarded " + URL)
+					fmt.Println("Discarded", URL)
 					return nil
 				}
 			} else {

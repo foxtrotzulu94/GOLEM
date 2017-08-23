@@ -1,0 +1,43 @@
+# Split into acquired and wishlist
+# Use Steam or another source to determine if the game is MP. If so, add it to the "infinity" queue (i.e a queue that can never really be completed)
+# Keep tabs on this list: http://steamcommunity.com/id/sniperjefz/wishlist/?sort=added
+http://store.steampowered.com/app/219890/
+http://store.steampowered.com/app/33910/
+http://store.steampowered.com/app/107410/
+http://store.steampowered.com/app/12200/
+http://store.steampowered.com/app/17300/
+http://store.steampowered.com/app/284460/
+http://store.steampowered.com/app/6910/
+http://store.steampowered.com/app/233270/
+http://store.steampowered.com/app/224760/
+http://store.steampowered.com/app/383870/
+http://store.steampowered.com/app/43000/
+http://www.metacritic.com/game/pc/grid
+http://store.steampowered.com/app/316790/
+http://store.steampowered.com/app/205230/Hell_Yeah_Wrath_of_the_Dead_Rabbit/
+http://store.steampowered.com/app/203140/
+http://www.metacritic.com/game/pc/hitman-sniper-challenge
+http://store.steampowered.com/app/205950/
+http://store.steampowered.com/app/6880/
+http://store.steampowered.com/app/8190/
+http://store.steampowered.com/app/233230/
+http://store.steampowered.com/app/289690/
+http://store.steampowered.com/app/23310/
+http://store.steampowered.com/app/319630/
+http://www.metacritic.com/game/pc/metro-2033
+http://store.steampowered.com/app/233290/
+http://store.steampowered.com/app/384110/
+http://store.steampowered.com/app/620/
+http://store.steampowered.com/app/3830/
+http://store.steampowered.com/app/4500/
+http://store.steampowered.com/app/233130/
+http://store.steampowered.com/app/221910/
+http://store.steampowered.com/app/203160/
+http://store.steampowered.com/app/224960/
+http://store.steampowered.com/app/225300/
+http://store.steampowered.com/app/225320/
+http://store.steampowered.com/app/8000/
+http://store.steampowered.com/app/7000/
+http://store.steampowered.com/app/201810/
+http://www.metacritic.com/game/pc/xiii
+http://www.metacritic.com/game/pc/stranglehold

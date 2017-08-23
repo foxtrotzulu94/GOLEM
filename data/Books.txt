@@ -1,0 +1,26 @@
+# TODO: Decide on a good enough heuristic
+https://www.amazon.ca/Things-Every-Programmer-Should-Know/dp/0596809484
+https://www.amazon.com/Creativity-Inc-Overcoming-Unseen-Inspiration/dp/0812993012?&tag=rnwff-20
+https://www.amazon.ca/Patterns-Enterprise-Application-Architecture-Martin/dp/0321127420
+https://www.amazon.ca/Habits-Highly-Effective-People/dp/0671315285
+https://www.amazon.ca/Design-Patterns-Elements-Reusable-Object-Oriented/dp/0201633612
+https://www.amazon.ca/Pragmatic-Programmer-Journeyman-Master/dp/020161622X
+https://www.amazon.ca/Clean-Code-Handbook-Software-Craftsmanship/dp/0132350882
+https://www.amazon.ca/Programming-Elixir-Functional-Concurrent-Pragmatic/dp/1937785580
+https://www.amazon.com/Game-Engine-Architecture-Jason-Gregory/dp/1568814135/ref=sr_1_1?ie=UTF8&s=books&qid=1246467543&sr=8-1&tag=rnwff-20
+https://www.amazon.ca/Physics-Game-Developers-Science-realistic/dp/1449392512?&tag=rnwff-20
+https://www.amazon.ca/Hacking-Art-Exploitation-2nd-Erickson/dp/1593271441?&tag=rnwff-20
+https://www.amazon.ca/Beginning-was-Command-Line/dp/0380815931/ref=sr_1_1?ie=UTF8&qid=1500043885&sr=8-1&keywords=In+the+Beginning...+Was+the+Command+Line
+https://www.amazon.ca/Bone-People-Keri-Hulme/dp/0330485415
+https://www.amazon.ca/Death-Life-Great-American-Cities/dp/067974195X/ref=sr_1_1?ie=UTF8&qid=1500063610&sr=8-1&keywords=the+death+and+life+of+great+american+cities
+https://www.amazon.ca/Attacks-Erwin-Rommel/dp/0960273603/ref=sr_1_2?ie=UTF8&qid=1500066116&sr=8-2&keywords=Attacks+Erwin+Rommel
+https://www.amazon.ca/Working-Effectively-Legacy-Michael-Feathers/dp/0131177052?&tag=rnwff-20
+https://www.amazon.ca/Hacking-Art-Exploitation-2nd-Erickson/dp/1593271441?&tag=rnwff-20
+https://www.amazon.ca/Structure-Interpretation-Computer-Programs-Abelson/dp/0262510871/ref=sr_1_1?s=books&ie=UTF8&qid=1500087942&sr=1-1&keywords=Structure+and+interpretation+of+computer+programs
+https://www.amazon.ca/Neuromancer-William-Gibson/dp/0441569595/ref=sr_1_1?ie=UTF8&qid=1500093265&sr=8-1&keywords=Neuromancer
+https://www.amazon.ca/Business-Speed-Thought-Succeeding-Digital/dp/0446675962/ref=tmm_pap_swatch_0?_encoding=UTF8&qid=1500155957&sr=8-1
+https://www.amazon.ca/Road-Ahead-Penguin-Readers-Level/dp/0582402115/ref=tmm_pap_swatch_0?_encoding=UTF8&qid=1500156153&sr=8-1
+https://www.amazon.ca/Some-Remarks-Essays-Other-Writing/dp/0062024442/ref=tmm_pap_swatch_0?_encoding=UTF8&qid=1500160003&sr=8-1
+https://www.amazon.ca/Timeless-Way-Building-Christopher-Alexander/dp/0195024028/ref=sr_1_1?ie=UTF8&qid=1500160191&sr=8-1&keywords=The+Timeless+Way+of+Building
+https://www.amazon.com/Programming-Interviews-Exposed-Secrets-Landing/dp/1118261364/ref=as_li_ss_tl?ie=UTF8&qid=1496773482&sr=8-4&keywords=coding+interview&linkCode=sl1&tag=lose9-20&linkId=1ff99380a432a2c482efaf44b737b350
+https://www.amazon.com/Image-Harvard-MIT-Joint-Center-Studies/dp/0262620014/?&tag=rnwff-20

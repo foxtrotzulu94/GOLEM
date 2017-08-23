@@ -9,7 +9,7 @@ import (
 	"sync"
 )
 
-//ManagerAction Defines a type signature for all the manager methods
+//ManagerAction Defines a type signature for all the Manager methods
 type ManagerAction func([]string) int
 
 func validateListName(str string) string {
@@ -108,7 +108,7 @@ func scan(args []string) int {
 
 func next(args []string) int {
 	if len(args) < 1 {
-		fmt.Println("\tUsage: manager next <list name>")
+		fmt.Println("\tUsage: ", os.Args[0], " next <list name>")
 		PrintKnownLists()
 		return 1
 	}
@@ -123,7 +123,7 @@ func next(args []string) int {
 
 func pop(args []string) int {
 	if len(args) < 1 {
-		fmt.Println("\tUsage: manager pop <list name>")
+		fmt.Println("\tUsage: ", os.Args[0], " pop <list name>")
 		PrintKnownLists()
 		return 1
 	}
@@ -149,7 +149,7 @@ func pop(args []string) int {
 
 func push(args []string) int {
 	if len(args) < 1 {
-		fmt.Println("\tUsage: manager push|add <list name> <URL>")
+		fmt.Println("\tUsage: ", os.Args[0], " push|add <list name> <URL>")
 		PrintKnownLists()
 		return 1
 	}
@@ -192,7 +192,7 @@ func push(args []string) int {
 
 func list(args []string) int {
 	if len(args) < 1 {
-		fmt.Println("\tUsage: manager list <list name> [max amount]")
+		fmt.Println("\tUsage: ", os.Args[0], " list <list name> [max amount]")
 		PrintKnownLists()
 		return 1
 	}
@@ -216,7 +216,7 @@ func list(args []string) int {
 
 func detail(args []string) int {
 	if len(args) < 2 {
-		fmt.Println("\tUsage: manager detail|view|info <list name> <ID>")
+		fmt.Println("\tUsage: ", os.Args[0], " detail|view|info <list name> <ID>")
 		PrintKnownLists()
 		return 1
 	}
@@ -264,7 +264,7 @@ func changeListElementField(args []string, fieldName string, newValue interface{
 
 func finished(args []string) int {
 	if len(args) < 1 {
-		fmt.Println("\tUsage: manager finished|finish <list name> <ID>")
+		fmt.Println("\tUsage: ", os.Args[0], " finished|finish <list name> <ID>")
 		PrintKnownLists()
 		return 1
 	}
@@ -275,7 +275,7 @@ func finished(args []string) int {
 
 func remove(args []string) int {
 	if len(args) < 1 {
-		fmt.Println("\tUsage: manager remove|delete <list name> <ID>")
+		fmt.Println("\tUsage: ", os.Args[0], " remove|delete <list name> <ID>")
 		PrintKnownLists()
 		return 1
 	}
@@ -286,7 +286,7 @@ func remove(args []string) int {
 
 func review(args []string) int {
 	if len(args) < 1 {
-		fmt.Println("\tUsage: manager review|check <list name> [viewed|finished|removed]")
+		fmt.Println("\tUsage: ", os.Args[0], " review|check <list name> [viewed|finished|removed]")
 		PrintKnownLists()
 		return 1
 	}
@@ -329,7 +329,7 @@ func review(args []string) int {
 
 func search(args []string) int {
 	if len(args) != 2 {
-		fmt.Println("\tUsage: manager search|find <list name> <string>")
+		fmt.Println("\tUsage: ", os.Args[0], " search|find <list name> <string>")
 		PrintKnownLists()
 		return 1
 	}
@@ -356,7 +356,7 @@ func search(args []string) int {
 
 func reconsider(args []string) int {
 	if len(args) < 1 {
-		fmt.Println("\tUsage: manager search|find <list name>")
+		fmt.Println("\tUsage: ", os.Args[0], " sort|reconsider|rate|reorganize <list name>")
 		PrintKnownLists()
 		return 1
 	}
@@ -404,10 +404,10 @@ var Actions = map[string]ManagerAction{
 	"find":       search,
 	"search":     search,
 	"lists":      enumerate,
-	"enumerate":  enumerate,
 	"reconsider": reconsider,
 	"reorganize": reconsider,
 	"rate":       reconsider,
+	"sort":       reconsider,
 }
 
 func enumerate(args []string) int {
