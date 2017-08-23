@@ -1,5 +1,4 @@
-# golem
-## The Golang Ordered List Executive Manager
+# golem: The Golang Ordered List Executive Manager
 
 ## What's this?
 This is just a small tool written in Go that I used both to keep track of my evergrowing lists of lists and also learn the language (my commit history will show I took some bad decisions along the way, but hopefully corrected most of them by now)
@@ -21,4 +20,6 @@ Actions are simply what you can do with a given list. The most common are:
 * Remove
 
 ## Why the name though?
-The namesake of this program is this [pokemon](). It was good enough because it had *go* in the name :)
+The namesake of this program is this [pokémon](https://bulbapedia.bulbagarden.net/wiki/Golem_(Pok%C3%A9mon)). 
+
+Seemed appropriate since it had *go* in the name :)
