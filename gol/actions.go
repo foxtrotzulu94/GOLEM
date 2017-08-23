@@ -32,17 +32,14 @@ func gatherInfo(mainChannel chan ListElement, url string, source InfoSource) {
 func scan(args []string) int {
 	//If no list is specified, just do all of them!
 	if len(args) < 1 {
-		var synch sync.WaitGroup
-		synch.Add(len(RegisteredTypes))
-
+		//Do them all synchronously to avoid the DB from crapping out!
 		for listName := range RegisteredTypes {
-			go func(activeList string) {
-				defer synch.Done()
+			func(activeList string) {
+				fmt.Println("Scanning", activeList)
 				scan([]string{activeList})
 			}(listName)
 		}
 
-		synch.Wait()
 		fmt.Println("All registered types were scanned")
 		return 0
 	}
@@ -103,8 +100,8 @@ func scan(args []string) int {
 	fmt.Printf("Storing %d new records in Database\n", len(sortedElements))
 	sortedElements.save()
 
-	fmt.Println("Cleaning up text file...")
-	//rewriteFile(fileName)
+	fmt.Println("Cleaning up", listName, "file...")
+	rewriteFile(fileName)
 
 	return 0
 }
@@ -195,18 +192,24 @@ func push(args []string) int {
 
 func list(args []string) int {
 	if len(args) < 1 {
-		fmt.Println("\tUsage: manager list <list name>")
+		fmt.Println("\tUsage: manager list <list name> [max amount]")
 		PrintKnownLists()
 		return 1
 	}
 
 	//Load all active items
 	listName := validateListName(args[0])
-
 	orderedList := loadListElements(listName, false, true, true)
-	for i, entry := range orderedList {
+
+	limit := len(orderedList)
+	if len(args) == 2 {
+		num, _ := strconv.Atoi(args[1])
+		limit = num
+	}
+
+	for i := 0; i < limit; i++ {
 		fmt.Printf("%4d.  ", i+1)
-		entry.printInfo()
+		orderedList[i].printInfo()
 	}
 	return 0
 }

@@ -186,7 +186,6 @@ func SourceSteamOnline(URL string) ListElement {
 		data, err := ioutil.ReadAll(resp.Body)
 		check(err)
 
-		fmt.Println(appID)
 		canFallback, err := jsonparser.GetBoolean(data, appID, "success")
 		check(err)
 
@@ -199,7 +198,6 @@ func SourceSteamOnline(URL string) ListElement {
 			}
 
 			//Fallback to Metacritic
-			fmt.Println("Steam Parse Error on ", URL, "- Falling back to Metacritic")
 			return SourceMetacritic(newURL)
 		}
 

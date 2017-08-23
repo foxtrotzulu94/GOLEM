@@ -62,11 +62,12 @@ func (item BookListElement) getListElementFields() ListElementFields {
 }
 
 func (item BookListElement) printInfo() {
-	fmt.Printf("[ID-%03d] (%.2f) \"%s\" - %s - %s\n", item.ID, item.Base.HeuristicRating, item.Base.Name, item.ReleaseDate.Format("2006-01-02"), item.Base.URL)
+	//URL is too long sometimes here :/
+	fmt.Printf("[ID-%03d] (%.2f) \"%s\" - %s\n", item.ID, item.Base.HeuristicRating, item.Base.Name, item.ReleaseDate.Format("2006-01-02"))
 }
 
 func (item BookListElement) printDetailedInfo() {
-	fmt.Printf("[ID-%03d] \"%s\" (%s)\n", item.ID, item.Base.Name, item.Base.URL)
+	fmt.Printf("[ID-%03d] \"%s\"\n(%s)\n", item.ID, item.Base.Name, item.Base.URL)
 	fmt.Printf("\tHeuristic Rating: %.2f - Source Rating: %.2f - Price: %.2f\n", item.Base.HeuristicRating, item.Base.SourceRating, item.Price)
 	fmt.Printf("\tLength: %d pages | Release Date: %s \n", item.Pages, item.ReleaseDate.Format("2006-01-02"))
 

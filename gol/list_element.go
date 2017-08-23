@@ -52,8 +52,8 @@ func (slice OrderedList) save() {
 type ListElementFields struct {
 	gorm.Model
 
-	URL         string `sql:"unique"`
-	Name        string `sql:"unique"`
+	URL         string `sql:"unique;not null"`
+	Name        string `sql:"unique;not null"`
 	Description string
 	IsRated     bool
 	WasViewed   bool
