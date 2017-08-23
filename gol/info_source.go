@@ -307,13 +307,108 @@ func SourceMetacritic(URL string) ListElement {
 }
 
 func SourceAmazonUS(URL string) ListElement {
-	//TODO:
-	return nil
+	redirect := strings.Replace(URL, ".com", ".ca", -1)
+	//I'm still not in the US... and the Canadian website is ALOT easier to scrape... and I'm lazy :)
+	return SourceAmazonCanada(redirect)
 }
 
 func SourceAmazonCanada(URL string) ListElement {
-	//TODO:
-	return nil
+	root := retrieveHTML(URL)
+
+	// Define the matcher so it collects all the tags of interest in one pass, we'll sort them out later
+	generalMatcher := func(n *html.Node) bool {
+		if n == nil {
+			return false
+		}
+
+		idVal := scrape.Attr(n, "id")
+
+		isName := idVal == "productTitle" && n.DataAtom == atom.Span
+		isDescription := n.DataAtom == atom.Noscript && n.Parent != nil && scrape.Attr(n.Parent, "id") == "bookDescription_feature_div"
+		isScore := idVal == "acrPopover" && n.DataAtom == atom.Span && strings.Contains(scrape.Attr(n, "class"), "reviewCountTextLinkedHistogram")
+
+		isDetailsBlock := idVal == "detail_bullets_id" && n.DataAtom == atom.Div
+		isPrice := strings.Contains(scrape.Attr(n, "class"), "-price") && strings.Contains(scrape.Text(n), "CDN$") && n.Parent != nil && scrape.Attr(n.Parent, "class") == "inlineBlock-display"
+		isReleaseDate := strings.Contains(scrape.Attr(n, "class"), "a-color-secondary") && n.DataAtom == atom.Span && n.Parent != nil && n.Parent.DataAtom == atom.H1 && scrape.Attr(n.Parent, "id") == "title"
+
+		return (isName || isDescription || isScore || isDetailsBlock || isPrice || isReleaseDate)
+	}
+
+	//Find and iterate
+	matches := scrape.FindAll(root, generalMatcher)
+
+	var price float64
+	var name, description string
+	var sourceRating float32
+	var pageCount int
+	var releaseDate time.Time
+	for _, tagMatch := range matches {
+		//Place it accordingly
+		stringMatch := scrape.Text(tagMatch)
+		idVal := scrape.Attr(tagMatch, "id")
+		switch idVal {
+		case "productTitle":
+			name = stringMatch
+		case "acrPopover":
+			starRating, _ := strconv.ParseFloat(stringMatch[:len("X.X")], 32)
+			sourceRating = float32(starRating)
+
+		case "detail_bullets_id":
+			pagesLocation := strings.Index(stringMatch, "pages")
+			if pagesLocation == -1 {
+				fmt.Println("Partial Parse Error with URL: ", URL)
+				//Don't proceed any further, but don't just stop
+				continue
+			}
+			newString := stringMatch[:pagesLocation]
+			startIdx := strings.LastIndex(newString, ": ")
+			if startIdx == -1 {
+				fmt.Println("Partial Parse Error with URL: ", URL)
+				//Don't proceed any further, but don't just stop
+				continue
+			}
+			pageString := newString[startIdx+2:]
+
+			pageCount, _ = strconv.Atoi(strings.TrimSpace(pageString))
+
+		default:
+			if strings.Contains(stringMatch, "CDN$") {
+				price, _ = strconv.ParseFloat(stringMatch[len("CDN$ "):], 64)
+			} else if strings.Contains(scrape.Attr(tagMatch, "class"), "a-color-secondary") && strings.Index(stringMatch, "– ") >= 0 {
+				startIdx := len(stringMatch) - len("Nov 19 2013")
+				if startIdx < 0 || startIdx >= len(stringMatch) {
+					fmt.Println("Partial Parse Error while retrieving Date with URL: ", URL)
+					releaseDate = time.Now()
+					continue
+				}
+				originalRelease, e := time.Parse("Jan 2 2006", strings.TrimSpace(stringMatch[startIdx:]))
+				if e != nil {
+					//Try Again
+					e = nil
+					nextStartIdx := strings.Index(stringMatch[startIdx:], " ")
+					originalRelease, e = time.Parse("Jan 2006", strings.TrimSpace(stringMatch[startIdx+nextStartIdx:]))
+					if e != nil {
+						fmt.Println(e, "- Parse Error with URL: ", URL)
+						releaseDate = time.Now()
+						continue
+					}
+				}
+				releaseDate = originalRelease
+			} else if tagMatch.DataAtom == atom.Noscript {
+				description = strings.TrimSpace(stringMatch)
+			}
+		}
+	}
+
+	var retVal BookListElement
+	retVal.Base = CreateListElementFields(URL, name, description, sourceRating*20)
+	retVal.Price = price
+	retVal.ReleaseDate = releaseDate
+	retVal.Pages = pageCount
+	retVal.Base.HeuristicRating = retVal.rateElement()
+	retVal.Base.IsRated = true
+
+	return retVal
 }
 
 func SourceIMDB(URL string) ListElement {

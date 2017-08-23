@@ -18,10 +18,6 @@ type GameListElement struct {
 }
 
 func (item GameListElement) rateElement() float32 {
-	if item.Base.IsRated {
-		return item.Base.HeuristicRating
-	}
-
 	dateFactor := 0.25 / 10000000
 	//But can you run Crisis?
 	timeSinceCrisis := item.ReleaseDate.Unix() - time.Date(2007, 11, 13, 0, 0, 0, 0, time.UTC).Unix()
@@ -51,7 +47,7 @@ func (item GameListElement) printInfo() {
 func (item GameListElement) printDetailedInfo() {
 	fmt.Printf("[ID-%03d] \"%s\" (%s)\n", item.ID, item.Base.Name, item.Base.URL)
 	fmt.Printf("\tHeuristic Rating: %.2f\n", item.Base.HeuristicRating)
-	fmt.Printf("\tPlatform: %s | Release Date: %s \n", item.Platform, item.ReleaseDate.Format("yyyy-MM-dd"))
+	fmt.Printf("\tPlatform: %s | Release Date: %s \n", item.Platform, item.ReleaseDate.Format("2006-01-02"))
 
 	PrintSetWidth(item.Base.Description, "\t ", "\n", 80)
 	fmt.Println("")

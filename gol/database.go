@@ -10,10 +10,15 @@ import (
 )
 
 var databaseName = "GOL.sqlite3"
+var databaseHandle *gorm.DB = nil
 
 //TODO: Add an in memory cache for queries
 
 func getDatabase() *gorm.DB {
+	// if databaseHandle != nil {
+	// 	return databaseHandle
+	// }
+
 	db, err := gorm.Open("sqlite3", databaseName)
 	check(err)
 
@@ -23,6 +28,7 @@ func getDatabase() *gorm.DB {
 		db.AutoMigrate(val)
 	}
 
+	databaseHandle = db
 	return db
 }
 

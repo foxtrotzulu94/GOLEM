@@ -17,10 +17,6 @@ type MovieListElement struct {
 }
 
 func (item MovieListElement) rateElement() float32 {
-	if item.Base.IsRated {
-		return item.Base.HeuristicRating
-	}
-
 	viewersFactor := float32(0.25)
 	return (item.Base.SourceRating * 10.0) + (float32(item.ReviewCount/100000) * viewersFactor)
 }

@@ -104,7 +104,7 @@ func scan(args []string) int {
 	sortedElements.save()
 
 	fmt.Println("Cleaning up text file...")
-	rewriteFile(fileName)
+	//rewriteFile(fileName)
 
 	return 0
 }
@@ -351,28 +351,60 @@ func search(args []string) int {
 	return 0
 }
 
+func reconsider(args []string) int {
+	if len(args) < 1 {
+		fmt.Println("\tUsage: manager search|find <list name>")
+		PrintKnownLists()
+		return 1
+	}
+
+	//Reload and rerate whatever active elements were in the list
+	listName := validateListName(args[0])
+	orderedList := loadListElements(listName, false, true, true)
+
+	fmt.Println("Reconsidering all active", listName)
+	var synch sync.WaitGroup
+	synch.Add(len(orderedList))
+	for _, activeListEntry := range orderedList {
+		go func(entry ListElement) {
+			defer synch.Done()
+
+			modifyListElementFields(entry, listName, "HeuristicRating", entry.rateElement())
+
+		}(activeListEntry)
+	}
+
+	synch.Wait()
+	fmt.Println("All registered types were rerated")
+
+	return list(args)
+}
+
 //Actions The functions that this program can do.
 var Actions = map[string]ManagerAction{
-	"scan":      scan,
-	"load":      scan,
-	"next":      next,
-	"push":      push,
-	"add":       push,
-	"pop":       pop,
-	"list":      list,
-	"detail":    detail,
-	"view":      detail,
-	"info":      detail,
-	"finished":  finished,
-	"finish":    finished,
-	"remove":    remove,
-	"delete":    remove,
-	"review":    review,
-	"check":     review,
-	"find":      search,
-	"search":    search,
-	"lists":     enumerate,
-	"enumerate": enumerate,
+	"scan":       scan,
+	"load":       scan,
+	"next":       next,
+	"push":       push,
+	"add":        push,
+	"pop":        pop,
+	"list":       list,
+	"detail":     detail,
+	"view":       detail,
+	"info":       detail,
+	"finished":   finished,
+	"finish":     finished,
+	"remove":     remove,
+	"delete":     remove,
+	"review":     review,
+	"check":      review,
+	"find":       search,
+	"search":     search,
+	"lists":      enumerate,
+	"enumerate":  enumerate,
+	"reconsider": reconsider,
+	"reorganize": reconsider,
+	"rate":       reconsider,
 }
 
 func enumerate(args []string) int {

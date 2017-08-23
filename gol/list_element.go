@@ -14,6 +14,7 @@ type ListElement interface {
 	getStoredName() string
 	getDerivedID() int
 	getListElementFields() ListElementFields
+
 	wasFinished() bool
 	wasRemoved() bool
 
@@ -94,4 +95,5 @@ var RegisteredTypes = map[string]ListElement{
 	"anime":  &AnimeListElement{},
 	"movies": &MovieListElement{},
 	"games":  &GameListElement{},
+	"books":  &BookListElement{},
 }

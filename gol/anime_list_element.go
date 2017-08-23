@@ -18,10 +18,6 @@ type AnimeListElement struct {
 }
 
 func (item AnimeListElement) rateElement() float32 {
-	if item.Base.IsRated {
-		return item.Base.HeuristicRating
-	}
-
 	lengthFactor := float32(1.5)
 	// dateFactor := float32(1.0)
 	return (item.Base.SourceRating * 10.0) - (float32(item.NumEpisodes) * lengthFactor)
