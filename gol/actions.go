@@ -236,29 +236,22 @@ func detail(args []string) int {
 }
 
 //This is used mostly by the "finished" and "remove" actions
-func changeListElementField(args []string, fieldName string, newValue interface{}) {
+func changeListElementField(args []string, requestInput bool, fieldName string, newValue interface{}) {
 	//First arg is listName, second is ID
 	listName := validateListName(args[0])
 	listID, _ := strconv.Atoi(args[1])
 	entry := getElementByID(listName, listID)
 	entry.printInfo()
 
-	if entry.wasFinished() {
-		fmt.Println("This entry was previously marked as viewed")
-		return
-	}
-	if entry.wasRemoved() {
-		fmt.Println("This entry was removed from the lists entirely")
-		return
+	proceedWithChanges := !requestInput
+	if requestInput{
+		choice := strings.ToLower(RequestInput("Are you sure you want to proceed? (Y/n): "))
+		proceedWithChanges = strings.Contains(choice, "y")
 	}
 
-	choice := strings.ToLower(RequestInput("Are you sure you want to proceed? (Y/n): "))
-
-	if strings.Contains(choice, "y") {
-		modifyListElementFields(entry, listName, "WasViewed", true)
-		fmt.Println("Marked as finished!")
-	} else {
-		os.Exit(0)
+	if proceedWithChanges {
+		modifyListElementFields(entry, listName, fieldName, true)
+		fmt.Println("List Item changed!")
 	}
 }
 
@@ -269,7 +262,19 @@ func finished(args []string) int {
 		return 1
 	}
 
-	changeListElementField(args, "WasViewed", true)
+	changeListElementField(args, true, "WasViewed", true)
+	return 0
+}
+
+func reactivate(args []string) int {
+	if len(args) < 1 {
+		fmt.Println("\tUsage: ", os.Args[0], " reactivate <list name> <ID>")
+		PrintKnownLists()
+		return 1
+	}
+
+	changeListElementField(args, false, "WasViewed", false)
+	changeListElementField(args, false, "WasRemoved", false)
 	return 0
 }
 
@@ -280,7 +285,7 @@ func remove(args []string) int {
 		return 1
 	}
 
-	changeListElementField(args, "WasRemoved", true)
+	changeListElementField(args, true, "WasRemoved", true)
 	return 0
 }
 
@@ -408,6 +413,7 @@ var Actions = map[string]ManagerAction{
 	"reorganize": reconsider,
 	"rate":       reconsider,
 	"sort":       reconsider,
+	"reactivate": reactivate,
 }
 
 func enumerate(args []string) int {
