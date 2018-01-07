@@ -10,7 +10,7 @@ import (
 )
 
 func printUsage() {
-	fmt.Println("\tUsage:", os.Args[0], "[action] [list name] [options]")
+	fmt.Println("\tUsage:", os.Args[0], "[action] [list name] [options] OR [-i | -interactive]")
 	fmt.Println("\tArguments depend on Options being executed")
 	fmt.Println("")
 	gol.PrintKnownActions()
@@ -50,12 +50,10 @@ func oneShotMode(cmdArgs []string) {
 	if actPtr, ok := gol.Actions[strings.ToLower(cmdArgs[0])]; !ok {
 		fmt.Printf("\tAction \"%s\" was not recognized\n", cmdArgs[0])
 		fmt.Println("\tAdditional Parameters: ", cmdArgs[1:])
-		return
 	} else {
 		action = actPtr
+		action(cmdArgs[1:])
 	}
-
-	action(cmdArgs[1:])
 }
 
 func interactiveModeLoop() {
@@ -77,10 +75,12 @@ func main() {
 	fmt.Println("Golang Ordered List Executive Manager (GOLEM)")
 	fmt.Println("Perfect for when you're bored and want some more stuff to do!")
 
-	interactiveMode := flag.Bool("interactive", false, "Turn on interactive mode for REPL style functionality")
+	var interactiveMode = false
+	flag.BoolVar(&interactiveMode, "interactive", false, "Turn on interactive mode for REPL style functionality")
+	flag.BoolVar(&interactiveMode, "i", false, "Turn on interactive mode for REPL style functionality")
 	flag.Parse()
 
-	if interactiveMode != nil && *interactiveMode {
+	if interactiveMode {
 		interactiveModeLoop()
 	} else {
 		//cmdArgs := []string{"list", "anime", ""}

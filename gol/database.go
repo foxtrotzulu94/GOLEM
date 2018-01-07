@@ -2,6 +2,8 @@ package gol
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
 	"reflect"
 
 	"github.com/jinzhu/gorm"
@@ -10,7 +12,7 @@ import (
 )
 
 var databaseName = "GOL.sqlite3"
-var databaseHandle *gorm.DB = nil
+var databaseHandle *gorm.DB
 
 //TODO: Add an in memory cache for queries
 
@@ -19,7 +21,8 @@ func getDatabase() *gorm.DB {
 	// 	return databaseHandle
 	// }
 
-	db, err := gorm.Open("sqlite3", databaseName)
+	databasePath, _ := filepath.Abs(filepath.Join(filepath.Dir(os.Args[0]), databaseName))
+	db, err := gorm.Open("sqlite3", databasePath)
 	check(err)
 
 	//Handle initialization/creation/migration automatically if possible

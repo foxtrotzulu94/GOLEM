@@ -3,3 +3,8 @@ info.txt
 *.run
 .vscode/
 *.sqlite3
+.vs/ProjectSettings.json
+.vs/slnx.sqlite
+.vs/VSWorkspaceState.json
+.vs/golem/v15/.suo
+gol/.database.go.swp
