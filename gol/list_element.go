@@ -21,6 +21,9 @@ type ListElement interface {
 	printInfo()
 	printDetailedInfo()
 
+	// Updates the rating and returns a new list element
+	updateRating(float32) ListElement
+
 	//Returns Primary Key
 	saveElement() ListElement
 	//Intended for bulk operations ONLY

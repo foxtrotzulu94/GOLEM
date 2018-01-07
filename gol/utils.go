@@ -152,3 +152,7 @@ func PrintKnownActions() {
 	PrintSetWidth(buffer.String(), "", "\n\t", 80)
 	fmt.Println("")
 }
+
+func Cleanup() {
+	closeDatabase()
+}

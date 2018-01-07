@@ -83,15 +83,19 @@ func (item BookListElement) wasRemoved() bool {
 	return item.Base.WasRemoved
 }
 
+func (item BookListElement) updateRating(newRating float32) ListElement {
+	item.Base.HeuristicRating = newRating
+	return item.saveElement()
+}
+
 func (item BookListElement) saveElement() ListElement {
 	db := getDatabase()
-	defer db.Close()
 
 	//NOTE: this is prone to breaking
 	if db.NewRecord(item) {
 		db.Create(&item)
 	} else {
-		db.Update(&item)
+		db.Save(&item)
 	}
 
 	return item
@@ -103,12 +107,10 @@ func (item BookListElement) saveOrderedList(list OrderedList) {
 		listEntry := element.(BookListElement)
 		db.Create(&listEntry)
 	}
-	db.Close()
 }
 
 func (item BookListElement) load(derivedID int) ListElement {
 	db := getDatabase()
-	defer db.Close()
 	if derivedID == 0 {
 		return nil
 	}
@@ -124,7 +126,6 @@ func (item BookListElement) load(derivedID int) ListElement {
 
 func (item BookListElement) loadOrderedList() OrderedList {
 	db := getDatabase()
-	defer db.Close()
 
 	var MainList []BookListElement
 	db.Find(&MainList)

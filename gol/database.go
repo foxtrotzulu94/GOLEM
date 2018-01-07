@@ -17,9 +17,9 @@ var databaseHandle *gorm.DB
 //TODO: Add an in memory cache for queries
 
 func getDatabase() *gorm.DB {
-	// if databaseHandle != nil {
-	// 	return databaseHandle
-	// }
+	if databaseHandle != nil {
+		return databaseHandle
+	}
 
 	databasePath, _ := filepath.Abs(filepath.Join(filepath.Dir(os.Args[0]), databaseName))
 	db, err := gorm.Open("sqlite3", databasePath)
@@ -31,8 +31,20 @@ func getDatabase() *gorm.DB {
 		db.AutoMigrate(val)
 	}
 
+	// Make the database file a passive mutex
+	// We can handle concurrent reads (which almost never happen)
+	// But the database breaks on concurrent writes (which almost always happen)
+	db.DB().SetMaxOpenConns(1)
+
 	databaseHandle = db
-	return db
+	return databaseHandle
+}
+
+func closeDatabase() {
+	if databaseHandle != nil {
+		databaseHandle.Close()
+	}
+	databaseHandle = nil
 }
 
 //Assumes a pointer is being passed
@@ -44,10 +56,8 @@ func dbCreateListElement(entry ListElement) {
 	if db.NewRecord(entry) {
 		db.Create(&entry)
 	} else {
-		db.Update(&entry)
+		db.Save(&entry)
 	}
-
-	defer db.Close()
 }
 
 func loadListElements(elementType string, filterActive, filterRemoved, filterViewed bool) OrderedList {
@@ -74,8 +84,7 @@ func loadListElements(elementType string, filterActive, filterRemoved, filterVie
 }
 
 func getElementByID(elementType string, elementID int) ListElement {
-	db := getDatabase()
-	defer db.Close()
+	getDatabase()
 
 	entry := RegisteredTypes[elementType]
 	return entry.load(elementID)
@@ -83,7 +92,6 @@ func getElementByID(elementType string, elementID int) ListElement {
 
 func modifyListElementFields(entry ListElement, elementType, fieldName string, newValue interface{}) {
 	db := getDatabase()
-	defer db.Close()
 
 	var element ListElementFields
 	tableName := entry.getStoredName()

@@ -244,7 +244,7 @@ func changeListElementField(args []string, requestInput bool, fieldName string, 
 	entry.printInfo()
 
 	proceedWithChanges := !requestInput
-	if requestInput{
+	if requestInput {
 		choice := strings.ToLower(RequestInput("Are you sure you want to proceed? (Y/n): "))
 		proceedWithChanges = strings.Contains(choice, "y")
 	}
@@ -371,15 +371,14 @@ func reconsider(args []string) int {
 	orderedList := loadListElements(listName, false, true, true)
 
 	fmt.Println("Reconsidering all active", listName)
+
 	var synch sync.WaitGroup
 	synch.Add(len(orderedList))
-	for _, activeListEntry := range orderedList {
+	for _, listEntry := range orderedList {
 		go func(entry ListElement) {
-			defer synch.Done()
-
-			modifyListElementFields(entry, listName, "HeuristicRating", entry.rateElement())
-
-		}(activeListEntry)
+			entry.updateRating(entry.rateElement())
+			synch.Done()
+		}(listEntry)
 	}
 
 	synch.Wait()
