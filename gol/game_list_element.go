@@ -24,6 +24,10 @@ func (item GameListElement) rateElement() float32 {
 	return item.Base.SourceRating + (float32(dateFactor) * float32(timeSinceCrisis))
 }
 
+func (item GameListElement) getRating() float32 {
+	return item.Base.HeuristicRating
+}
+
 func (item GameListElement) getListName() string {
 	return "games"
 }
@@ -61,8 +65,12 @@ func (item GameListElement) wasRemoved() bool {
 	return item.Base.WasRemoved
 }
 
-func (item GameListElement) updateRating(newRating float32) ListElement {
-	item.Base.HeuristicRating = newRating
+func (item GameListElement) updateRating() ListElement {
+	newItem := determineAppropriateSource(item.Base.URL)(item.Base.URL)
+	item.Base.SourceRating = newItem.getListElementFields().SourceRating
+	item.Base.HeuristicRating = newItem.rateElement()
+	item.Base.IsRated = true
+
 	return item.saveElement()
 }
 

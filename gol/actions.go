@@ -32,9 +32,8 @@ func gatherInfo(mainChannel chan ListElement, url string, source InfoSource) {
 func scan(args []string) int {
 	//If no list is specified, just do all of them!
 	if len(args) < 1 {
-		//Do them all synchronously to avoid the DB from crapping out!
 		for listName := range RegisteredTypes {
-			func(activeList string) {
+			go func(activeList string) {
 				fmt.Println("Scanning", activeList)
 				scan([]string{activeList})
 			}(listName)
@@ -250,7 +249,7 @@ func changeListElementField(args []string, requestInput bool, fieldName string, 
 	}
 
 	if proceedWithChanges {
-		modifyListElementFields(entry, listName, fieldName, true)
+		modifyListElementFields(entry, listName, fieldName, newValue)
 		fmt.Println("List Item changed!")
 	}
 }
@@ -360,14 +359,25 @@ func search(args []string) int {
 }
 
 func reconsider(args []string) int {
-	if len(args) < 1 {
-		fmt.Println("\tUsage: ", os.Args[0], " sort|reconsider|rate|reorganize <list name>")
+	argLength := len(args)
+	if argLength < 1 {
+		fmt.Println("\tUsage: ", os.Args[0], " sort|reconsider|rate|reorganize <list name> <IDs (optional)>")
 		PrintKnownLists()
 		return 1
 	}
 
 	//Reload and rerate whatever active elements were in the list
 	listName := validateListName(args[0])
+	if argLength >= 2 {
+		for i := 1; i < len(args); i++ {
+			// Don't load all the list f we just need one element
+			numericID, _ := strconv.Atoi(args[i])
+			listElement := RegisteredTypes[listName].load(numericID)
+			changeListElementField([]string{args[0], args[i]}, false, "HeuristicRating", listElement.rateElement())
+		}
+		return 0
+	}
+
 	orderedList := loadListElements(listName, false, true, true)
 
 	fmt.Println("Reconsidering all active", listName)
@@ -376,7 +386,7 @@ func reconsider(args []string) int {
 	synch.Add(len(orderedList))
 	for _, listEntry := range orderedList {
 		go func(entry ListElement) {
-			entry.updateRating(entry.rateElement())
+			entry.updateRating()
 			synch.Done()
 		}(listEntry)
 	}

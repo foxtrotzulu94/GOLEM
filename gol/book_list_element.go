@@ -45,6 +45,10 @@ func (item BookListElement) rateElement() float32 {
 	return sourceContrib + timeContrib + lengthContrib + priceContrib
 }
 
+func (item BookListElement) getRating() float32 {
+	return item.Base.HeuristicRating
+}
+
 func (item BookListElement) getListName() string {
 	return "books"
 }
@@ -83,8 +87,12 @@ func (item BookListElement) wasRemoved() bool {
 	return item.Base.WasRemoved
 }
 
-func (item BookListElement) updateRating(newRating float32) ListElement {
-	item.Base.HeuristicRating = newRating
+func (item BookListElement) updateRating() ListElement {
+	newItem := determineAppropriateSource(item.Base.URL)(item.Base.URL)
+	item.Base.SourceRating = newItem.getListElementFields().SourceRating
+	item.Base.HeuristicRating = newItem.rateElement()
+	item.Base.IsRated = true
+
 	return item.saveElement()
 }
 

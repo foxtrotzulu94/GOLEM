@@ -21,6 +21,10 @@ func (item MovieListElement) rateElement() float32 {
 	return (item.Base.SourceRating * 10.0) + (float32(item.ReviewCount/100000) * viewersFactor)
 }
 
+func (item MovieListElement) getRating() float32 {
+	return item.Base.HeuristicRating
+}
+
 func (item MovieListElement) getListName() string {
 	return "movies"
 }
@@ -58,8 +62,12 @@ func (item MovieListElement) wasRemoved() bool {
 	return item.Base.WasRemoved
 }
 
-func (item MovieListElement) updateRating(newRating float32) ListElement {
-	item.Base.HeuristicRating = newRating
+func (item MovieListElement) updateRating() ListElement {
+	newItem := determineAppropriateSource(item.Base.URL)(item.Base.URL)
+	item.Base.SourceRating = newItem.getListElementFields().SourceRating
+	item.Base.HeuristicRating = newItem.rateElement()
+	item.Base.IsRated = true
+
 	return item.saveElement()
 }
 

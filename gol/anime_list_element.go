@@ -23,6 +23,10 @@ func (item AnimeListElement) rateElement() float32 {
 	return (item.Base.SourceRating * 10.0) - (float32(item.NumEpisodes) * lengthFactor)
 }
 
+func (item AnimeListElement) getRating() float32 {
+	return item.Base.HeuristicRating
+}
+
 func (item AnimeListElement) getListName() string {
 	return "anime"
 }
@@ -60,8 +64,12 @@ func (item AnimeListElement) wasRemoved() bool {
 	return item.Base.WasRemoved
 }
 
-func (item AnimeListElement) updateRating(newRating float32) ListElement {
-	item.Base.HeuristicRating = newRating
+func (item AnimeListElement) updateRating() ListElement {
+	newItem := determineAppropriateSource(item.Base.URL)(item.Base.URL)
+	item.Base.SourceRating = newItem.getListElementFields().SourceRating
+	item.Base.HeuristicRating = newItem.rateElement()
+	item.Base.IsRated = true
+
 	return item.saveElement()
 }
 

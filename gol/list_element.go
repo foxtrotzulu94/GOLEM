@@ -13,6 +13,7 @@ type ListElement interface {
 	getListName() string
 	getStoredName() string
 	getDerivedID() int
+	getRating() float32
 	getListElementFields() ListElementFields
 
 	wasFinished() bool
@@ -22,7 +23,7 @@ type ListElement interface {
 	printDetailedInfo()
 
 	// Updates the rating and returns a new list element
-	updateRating(float32) ListElement
+	updateRating() ListElement
 
 	//Returns Primary Key
 	saveElement() ListElement
@@ -41,7 +42,7 @@ func (slice OrderedList) Len() int {
 }
 
 func (slice OrderedList) Less(i, j int) bool {
-	return slice[i].rateElement() < slice[j].rateElement()
+	return slice[i].getRating() < slice[j].getRating()
 }
 
 func (slice OrderedList) Swap(i, j int) {
