@@ -18,9 +18,17 @@ type AnimeListElement struct {
 }
 
 func (item AnimeListElement) rateElement() float32 {
-	lengthFactor := float32(1.5)
-	// dateFactor := float32(1.0)
-	return (item.Base.SourceRating * 10.0) - (float32(item.NumEpisodes) * lengthFactor)
+	lengthModifier := float32(-0.5)
+	dateModifier := float32(0.5)
+
+	baseRating := (item.Base.SourceRating * 10.0)
+	lengthFactor := (float32(item.NumEpisodes) * lengthModifier)
+
+	// 2006 had some amazing Anime (source: https://www.reddit.com/r/anime/comments/7i41a0/discussion_what_is_the_best_year_of_anime/)
+	dateFactor := float32(item.AirTime.Year()-time.Date(2006, 1, 1, 1, 0, 0, 0, time.UTC).Year()) * dateModifier
+	fmt.Printf("\tdateFactor %.2f\n", dateFactor)
+
+	return baseRating + lengthFactor + dateFactor
 }
 
 func (item AnimeListElement) getRating() float32 {
@@ -65,9 +73,15 @@ func (item AnimeListElement) wasRemoved() bool {
 }
 
 func (item AnimeListElement) updateRating() ListElement {
-	newItem := determineAppropriateSource(item.Base.URL)(item.Base.URL)
+	fmt.Printf("Element: %s\n", item.Base.Name)
+	newItem := determineAppropriateSource(item.Base.URL)(item.Base.URL).(AnimeListElement)
+
 	item.Base.SourceRating = newItem.getListElementFields().SourceRating
+	fmt.Printf("\tNew Source Rating: %f\n", item.Base.SourceRating)
 	item.Base.HeuristicRating = newItem.rateElement()
+	fmt.Printf("\tRecalculated Heuristic: %f\n", item.Base.HeuristicRating)
+
+	item.NumEpisodes = newItem.NumEpisodes
 	item.Base.IsRated = true
 
 	return item.saveElement()
@@ -75,13 +89,7 @@ func (item AnimeListElement) updateRating() ListElement {
 
 func (item AnimeListElement) saveElement() ListElement {
 	db := getDatabase()
-
-	//NOTE: this is prone to breaking
-	if db.NewRecord(item) {
-		db.Create(&item)
-	} else {
-		db.Save(&item)
-	}
+	db.Save(&item)
 
 	return item
 }

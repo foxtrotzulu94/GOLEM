@@ -370,10 +370,10 @@ func reconsider(args []string) int {
 	listName := validateListName(args[0])
 	if argLength >= 2 {
 		for i := 1; i < len(args); i++ {
-			// Don't load all the list f we just need one element
+			// Don't load all the list if we just need one element
 			numericID, _ := strconv.Atoi(args[i])
 			listElement := RegisteredTypes[listName].load(numericID)
-			changeListElementField([]string{args[0], args[i]}, false, "HeuristicRating", listElement.rateElement())
+			listElement.updateRating()
 		}
 		return 0
 	}

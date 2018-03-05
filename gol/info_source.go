@@ -50,8 +50,10 @@ func SourceMyAnimeList(URL string) ListElement {
 		isDescription := scrape.Attr(n, "itemprop") == "description"
 		isNumEpisodes := (scrape.Attr(n, "class") == "spaceit" && strings.Contains(scrape.Text(n), "Episodes:"))
 		isScore := scrape.Attr(n, "data-title") == "score"
+		//isAirDate := strings.Contains(scrape.Text(n), "Premiered:")
+		isAirDate := (scrape.Attr(n, "class") == "spaceit" && strings.Contains(scrape.Text(n), "Aired:"))
 
-		return (isName || isDescription || isNumEpisodes || isScore)
+		return (isName || isDescription || isNumEpisodes || isScore || isAirDate)
 	}
 
 	//Find and iterate
@@ -60,11 +62,19 @@ func SourceMyAnimeList(URL string) ListElement {
 	var name, description string
 	var numEpisodes int
 	var sourceRating float32
+	var airedYear int
 	for _, tagMatch := range matches {
 		//Place it accordingly
 		stringMatch := scrape.Text(tagMatch)
 		if strings.Contains(stringMatch, "Episodes: ") {
 			numEpisodes, _ = strconv.Atoi(stringMatch[len("Episodes: "):])
+		} else if strings.Contains(stringMatch, "Aired: ") {
+			originalRun := stringMatch[len("Aired: "):]
+			startDate := strings.Split(originalRun, "to")[0]
+			dateSplit := strings.Split(startDate, ",")
+
+			// We only really care about the year in the grand scheme of things
+			airedYear, _ = strconv.Atoi(strings.Trim(dateSplit[1], " "))
 		} else {
 			if scrape.Attr(tagMatch, "data-title") == "score" {
 				floatVal, e := strconv.ParseFloat(stringMatch, 32)
@@ -92,6 +102,7 @@ func SourceMyAnimeList(URL string) ListElement {
 	//Create the object and populate fields
 	var retVal AnimeListElement
 	retVal.NumEpisodes = numEpisodes
+	retVal.AirTime = time.Date(airedYear, 1, 1, 1, 0, 0, 0, time.UTC)
 	retVal.Base = CreateListElementFields(URL, name, description, sourceRating)
 	retVal.Base.HeuristicRating = retVal.rateElement()
 	retVal.Base.IsRated = true
