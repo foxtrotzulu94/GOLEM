@@ -1,7 +1,6 @@
 package gol
 
 import (
-	"math"
 	"reflect"
 
 	"github.com/jinzhu/gorm"
@@ -75,7 +74,7 @@ func CreateListElementFields(url, name, description string, sourceRating float32
 	common.URL = url
 	common.Name = name
 	common.SourceRating = sourceRating
-	common.HeuristicRating = float32(math.NaN())
+	common.HeuristicRating = sourceRating
 	common.Description = description
 	common.IsRated = false
 	common.WasRemoved = false

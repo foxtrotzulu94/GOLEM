@@ -485,7 +485,8 @@ var Sources = map[string]InfoSource{
 	"www.amazon.ca":          SourceAmazonCanada,
 	"amazon.com":             SourceAmazonUS,
 	"www.metacritic.com":     SourceMetacritic,
-	"www.imdb.com":           SourceIMDB,
+	// Need to rework the IMDB parser since they changed their website
+	// "www.imdb.com":           SourceIMDB,
 }
 
 func determineAppropriateSource(URL string) InfoSource {

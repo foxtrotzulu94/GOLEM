@@ -167,8 +167,19 @@ func push(args []string) int {
 		if strings.Contains(choice, "n") {
 			os.Exit(0)
 		}
+
 		//Make a generic list element
-		listElement = CreateListElement(listName, newEntry, newEntry, "N/A", 50.0)
+		newEntryName := strings.Replace(RequestInput("Enter list item title: "), "\n", "", -1)
+		description := strings.Replace(RequestInput("Entry description (optional) [N/A]: "), "\n", "", -1)
+		rating, err := strconv.ParseFloat(strings.Replace(RequestInput("Enter desired rating for item: "), "\n", "", -1), 64)
+		check(err)
+		if description == "" {
+			description = "N/A"
+		}
+
+		rating32 := float32(rating)
+		fmt.Printf("%f\n", rating32)
+		listElement = CreateListElement(listName, newEntry, newEntryName, description, rating32)
 	} else {
 		fmt.Println("Processing Info Online")
 		//Make a small gather info routine
