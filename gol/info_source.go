@@ -46,7 +46,7 @@ func SourceMyAnimeList(URL string) ListElement {
 			return false
 		}
 
-		isName := scrape.Attr(n, "itemprop") == "name" && n.Parent != nil && n.Parent.DataAtom == atom.H1
+		isName := scrape.Attr(n, "itemprop") == "name" && n.Parent != nil && (n.Parent.DataAtom == atom.H1 || n.Parent.DataAtom == atom.Span)
 		isDescription := scrape.Attr(n, "itemprop") == "description"
 		isNumEpisodes := (scrape.Attr(n, "class") == "spaceit" && strings.Contains(scrape.Text(n), "Episodes:"))
 		isScore := scrape.Attr(n, "data-title") == "score"

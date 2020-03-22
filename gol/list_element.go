@@ -70,6 +70,10 @@ type ListElementFields struct {
 }
 
 func CreateListElementFields(url, name, description string, sourceRating float32) ListElementFields {
+	if name == ""{
+		panic("Name field was empty!")
+	}
+
 	var common ListElementFields
 	common.URL = url
 	common.Name = name
